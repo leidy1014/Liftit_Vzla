@@ -32,17 +32,6 @@ services:
       - key: FRONTEND_URL
         sync: false
 
-  # ── Frontend Angular ──
-  - type: static
-    name: cherry-glam-frontend
-    rootDir: frontend
-    buildCommand: npm install && npm run build
-    staticPublishPath: dist/frontend/browser
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-
 databases:
   - name: cherry-glam-db
     databaseName: cherry_glam
