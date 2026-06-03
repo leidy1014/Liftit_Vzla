@@ -1,0 +1,8 @@
+/* Reutiliza los mismos estilos del login */
+@import '../login/login.css';
+
+.field-error {
+  font-size: 0.78rem;
+  color: #c62828;
+  margin-top: 2px;
+}

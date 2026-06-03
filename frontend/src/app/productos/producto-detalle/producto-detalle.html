@@ -1,0 +1,113 @@
+<app-navbar />
+
+<div class="detalle-page">
+
+  @if (cargando()) {
+    <div class="detalle-cargando">
+      <span class="cargando-icon">✿</span>
+      <p>Cargando producto...</p>
+    </div>
+  }
+
+  @if (!cargando() && producto()) {
+    <div class="detalle-container">
+
+      <!-- Breadcrumb -->
+      <nav class="breadcrumb">
+        <a routerLink="/productos" class="breadcrumb-link">Catálogo</a>
+        <span class="breadcrumb-sep">›</span>
+        @if (producto()!.categoria) {
+          <span class="breadcrumb-cat">{{ producto()!.categoria!.nombre }}</span>
+          <span class="breadcrumb-sep">›</span>
+        }
+        <span class="breadcrumb-actual">{{ producto()!.nombre }}</span>
+      </nav>
+
+      <div class="detalle-grid">
+
+        <!-- Imagen -->
+        <div class="detalle-imagen-wrap">
+          @if (producto()!.imagen) {
+            <img [src]="getImagenUrl(producto()!.imagen!)" [alt]="producto()!.nombre" class="detalle-imagen" />
+          } @else {
+            <div class="detalle-imagen-placeholder">
+              <span>✿</span>
+            </div>
+          }
+          @if (producto()!.stock === 0) {
+            <div class="detalle-agotado-overlay">Agotado</div>
+          }
+          @if (producto()!.stock > 0 && producto()!.stock <= 5) {
+            <div class="detalle-ultimas">¡Últimas {{ producto()!.stock }} unidades!</div>
+          }
+        </div>
+
+        <!-- Info -->
+        <div class="detalle-info">
+          @if (producto()!.categoria) {
+            <span class="detalle-categoria">{{ producto()!.categoria!.nombre }}</span>
+          }
+          <h1 class="detalle-nombre">{{ producto()!.nombre }}</h1>
+
+          @if (producto()!.referencia) {
+            <p class="detalle-ref">Ref: {{ producto()!.referencia }}</p>
+          }
+
+          <div class="detalle-precio">
+            {{ producto()!.precio | currency:'COP':'symbol':'1.0-0' }}
+          </div>
+
+          @if (producto()!.descripcion) {
+            <p class="detalle-descripcion">{{ producto()!.descripcion }}</p>
+          }
+
+          <!-- Selector de cantidad -->
+          @if (producto()!.stock > 0) {
+            <div class="cantidad-row">
+              <span class="cantidad-label">Cantidad</span>
+              <div class="cantidad-control">
+                <button class="cant-btn" (click)="disminuirCantidad()" [disabled]="cantidad() <= 1">−</button>
+                <span class="cant-valor">{{ cantidad() }}</span>
+                <button class="cant-btn" (click)="aumentarCantidad()" [disabled]="cantidad() >= producto()!.stock">+</button>
+              </div>
+              <span class="stock-disponible">{{ producto()!.stock }} disponibles</span>
+            </div>
+          }
+
+          <!-- Acciones -->
+          <div class="detalle-acciones">
+            <button
+              class="btn-agregar-detalle"
+              (click)="agregarAlCarrito()"
+              [disabled]="producto()!.stock === 0">
+              🛒 {{ producto()!.stock === 0 ? 'Agotado' : 'Agregar al carrito' }}
+            </button>
+            <button class="btn-whatsapp" (click)="pedirPorWhatsapp()">
+              <span class="wa-icon">💬</span> Pedir por WhatsApp
+            </button>
+          </div>
+
+          @if (producto()!.stock === 0) {
+            <p class="agotado-msg">Este producto está temporalmente agotado. Contáctanos por WhatsApp para consultar disponibilidad.</p>
+          }
+        </div>
+      </div>
+
+      <!-- Botón volver -->
+      <div class="volver-row">
+        <a routerLink="/productos" class="btn-volver-catalogo">← Volver al catálogo</a>
+      </div>
+
+    </div>
+  }
+
+</div>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="footer-brand">
+    <img src="/logo.png.jpeg" alt="Cherry Glam" class="footer-logo" />
+    <span class="footer-name">Cherry Glam Beauty</span>
+  </div>
+  <p class="footer-tagline">Realza tu belleza natural</p>
+</footer>

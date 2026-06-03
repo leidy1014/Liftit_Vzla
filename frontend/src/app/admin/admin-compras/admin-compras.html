@@ -1,0 +1,456 @@
+<!-- ══ HEADER ══ -->
+<div class="admin-page-header">
+  <div>
+    <h2 class="admin-page-title">Compras</h2>
+    <p class="admin-page-subtitle">Órdenes de compra y proveedores</p>
+  </div>
+  <div class="header-acciones">
+    @if (vista() === 'lista') {
+      <button class="btn-secundario" (click)="vista.set('proveedores')">Proveedores</button>
+      <button class="btn-nueva-compra" (click)="irANueva()">+ Nueva orden</button>
+    }
+    @if (vista() === 'proveedores') {
+      <button class="btn-secundario" (click)="vista.set('lista')">← Volver a compras</button>
+    }
+    @if (vista() === 'historial-proveedor') {
+      <button class="btn-secundario" (click)="volverAProveedores()">← Volver a proveedores</button>
+    }
+  </div>
+</div>
+
+<!-- ══════════════════════ VISTA: LISTA ══════════════════════ -->
+@if (vista() === 'lista') {
+
+  <div class="filtros-estado">
+    <button [class]="filtro() === 'todos' ? 'filtro-btn active' : 'filtro-btn'" (click)="filtro.set('todos')">Todos</button>
+    <button [class]="filtro() === 'pedido' ? 'filtro-btn active' : 'filtro-btn'" (click)="filtro.set('pedido')">Pedidos</button>
+    <button [class]="filtro() === 'recibido' ? 'filtro-btn active' : 'filtro-btn'" (click)="filtro.set('recibido')">Recibidos</button>
+    <button [class]="filtro() === 'cancelado' ? 'filtro-btn active' : 'filtro-btn'" (click)="filtro.set('cancelado')">Cancelados</button>
+  </div>
+
+  <div class="admin-table-container">
+    @if (comprasFiltradas().length === 0) {
+      <div class="empty-state">
+        <p>No hay órdenes en esta categoría aún.</p>
+        <button class="btn-nueva-compra" (click)="irANueva()">Crear primera orden</button>
+      </div>
+    } @else {
+      <table mat-table [dataSource]="comprasFiltradas()" style="width:100%">
+
+        <ng-container matColumnDef="numero">
+          <th mat-header-cell *matHeaderCellDef>Número</th>
+          <td mat-cell *matCellDef="let c"><span class="compra-numero">{{ c.numero }}</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="fecha">
+          <th mat-header-cell *matHeaderCellDef>Fecha</th>
+          <td mat-cell *matCellDef="let c">{{ c.fecha | date:'dd/MM/yyyy' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="proveedor">
+          <th mat-header-cell *matHeaderCellDef>Proveedor</th>
+          <td mat-cell *matCellDef="let c"><span class="proveedor-nombre">{{ c.proveedor?.nombre ?? '—' }}</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef>Total</th>
+          <td mat-cell *matCellDef="let c"><strong>{{ c.total | currency:'COP':'symbol':'1.0-0' }}</strong></td>
+        </ng-container>
+
+        <ng-container matColumnDef="estado">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let c">
+            <span [class]="'badge-estado ' + c.estado">
+              {{ c.estado === 'pedido' ? 'Pedido' : c.estado === 'recibido' ? 'Recibido' : 'Cancelado' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let c">
+            <button class="btn-ver-detalle" (click)="verDetalle(c)">Ver detalle</button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnasLista"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnasLista" class="fila-compra"></tr>
+      </table>
+    }
+  </div>
+}
+
+<!-- ══════════════════════ VISTA: NUEVA / EDITAR ══════════════════════ -->
+@if (vista() === 'nueva') {
+  <div class="nueva-layout">
+    <form [formGroup]="compraForm" class="nueva-form-card">
+      <h3 class="form-card-title">{{ editandoId() ? 'Editar pedido' : 'Nueva orden de compra' }}</h3>
+
+      <!-- Proveedor con autocomplete -->
+      <mat-form-field>
+        <mat-label>Proveedor</mat-label>
+        <input matInput
+               formControlName="proveedorNombre"
+               [matAutocomplete]="autoProveedor"
+               (input)="onNombreProveedorChange()"
+               placeholder="Buscar proveedor..." />
+        <mat-autocomplete #autoProveedor (optionSelected)="onProveedorSeleccionado($event)">
+          @for (p of getProveedoresFiltrados(); track p.id) {
+            <mat-option [value]="p.nombre">
+              {{ p.nombre }}@if (p.nit) { · NIT {{ p.nit }} }
+            </mat-option>
+          }
+          @if (mostrarCrearProveedor()) {
+            <mat-option value="__crear__" class="opcion-crear-proveedor">
+              ➕ Crear "{{ compraForm.get('proveedorNombre')?.value }}" como proveedor
+            </mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <!-- Datos adicionales -->
+      <div class="form-row-dos">
+        <mat-form-field>
+          <mat-label>N° factura del proveedor</mat-label>
+          <input matInput formControlName="facturaProveedor" placeholder="Ej: FAC-2024-001" />
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Fecha de vencimiento</mat-label>
+          <input matInput type="date" formControlName="fechaVencimiento" />
+        </mat-form-field>
+      </div>
+
+      <!-- Líneas de productos -->
+      <div class="lineas-header">
+        <span class="lineas-titulo">Productos</span>
+        <button type="button" class="btn-agregar-linea" (click)="agregarLinea()">+ Agregar línea</button>
+      </div>
+
+      <div formArrayName="lineas" class="lineas-container">
+        @for (linea of lineasArray.controls; track $index) {
+          <div [formGroupName]="$index" class="linea-fila">
+
+            <mat-form-field class="linea-producto">
+              <mat-label>Producto</mat-label>
+              <input matInput
+                     #productoInput
+                     formControlName="productoNombre"
+                     [matAutocomplete]="autoProducto"
+                     (input)="onNombreProductoChange($index)"
+                     placeholder="Buscar producto..." />
+              <mat-autocomplete #autoProducto (optionSelected)="onProductoSeleccionado($index, $event)">
+                @for (p of getProductosFiltrados($index); track p.id) {
+                  <mat-option [value]="p.nombre">
+                    {{ p.nombre }}@if (p.referencia) { · {{ p.referencia }} }
+                  </mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+
+            <mat-form-field class="linea-cantidad">
+              <mat-label>Cant.</mat-label>
+              <input matInput type="number" formControlName="cantidad" min="1"
+                     (keydown.enter)="agregarLinea()" />
+            </mat-form-field>
+
+            <mat-form-field class="linea-precio">
+              <mat-label>Precio compra</mat-label>
+              <input matInput type="number" formControlName="precioCompra" min="0"
+                     (keydown.enter)="agregarLinea()" />
+            </mat-form-field>
+
+            <div class="linea-subtotal">
+              {{ calcularSubtotal($index) | currency:'COP':'symbol':'1.0-0' }}
+            </div>
+
+            @if (lineasArray.length > 1) {
+              <button type="button" class="btn-eliminar-linea" (click)="eliminarLinea($index)">✕</button>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- Total -->
+      <div class="nueva-total">
+        <span class="total-label">Total</span>
+        <span class="total-valor">{{ calcularTotal() | currency:'COP':'symbol':'1.0-0' }}</span>
+      </div>
+
+      <!-- Botones -->
+      <div class="nueva-acciones">
+        <button type="button" class="btn-cancelar-form" (click)="volver()">Cancelar</button>
+        <button mat-raised-button color="primary" type="button"
+                [disabled]="compraForm.invalid || lineasArray.length === 0"
+                (click)="guardarCompra()">
+          {{ editandoId() ? 'Guardar cambios' : 'Crear pedido' }}
+        </button>
+      </div>
+    </form>
+  </div>
+}
+
+<!-- ══════════════════════ VISTA: DETALLE ══════════════════════ -->
+@if (vista() === 'detalle' && compraSeleccionada()) {
+  <div class="detalle-layout">
+
+    <div class="detalle-header">
+      <button class="btn-volver" (click)="volver()">← Volver</button>
+      <div class="detalle-titulo">
+        <h3 class="detalle-numero">{{ compraSeleccionada()!.numero }}</h3>
+        <span [class]="'badge-estado ' + compraSeleccionada()!.estado">
+          {{ compraSeleccionada()!.estado === 'pedido' ? 'Pedido' : compraSeleccionada()!.estado === 'recibido' ? 'Recibido' : 'Cancelado' }}
+        </span>
+      </div>
+
+      @if (compraSeleccionada()!.estado === 'pedido') {
+        <div class="detalle-acciones">
+          <button class="btn-cancelar-venta" (click)="cancelar()">Cancelar pedido</button>
+          <button class="btn-editar-venta" (click)="irAEditar(compraSeleccionada()!)">Editar</button>
+          <button mat-raised-button color="primary" (click)="recibir()">Marcar como recibido</button>
+        </div>
+      }
+    </div>
+
+    <!-- Info general -->
+    <div class="detalle-info">
+      <div class="info-item">
+        <span class="info-label">Proveedor</span>
+        <span class="info-valor">{{ compraSeleccionada()!.proveedor?.nombre ?? '—' }}</span>
+      </div>
+      @if (compraSeleccionada()!.proveedor?.nit) {
+        <div class="info-item">
+          <span class="info-label">NIT</span>
+          <span class="info-valor">{{ compraSeleccionada()!.proveedor!.nit }}</span>
+        </div>
+      }
+      <div class="info-item">
+        <span class="info-label">Fecha</span>
+        <span class="info-valor">{{ compraSeleccionada()!.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+      @if (compraSeleccionada()!.facturaProveedor) {
+        <div class="info-item">
+          <span class="info-label">Factura proveedor</span>
+          <span class="info-valor">{{ compraSeleccionada()!.facturaProveedor }}</span>
+        </div>
+      }
+      @if (compraSeleccionada()!.fechaVencimiento) {
+        <div class="info-item">
+          <span class="info-label">Vencimiento</span>
+          <span class="info-valor">{{ compraSeleccionada()!.fechaVencimiento | date:'dd/MM/yyyy' }}</span>
+        </div>
+      }
+      <div class="info-item">
+        <span class="info-label">Total</span>
+        <span class="info-valor total-grande">{{ compraSeleccionada()!.total | currency:'COP':'symbol':'1.0-0' }}</span>
+      </div>
+    </div>
+
+    <!-- Tabla de items -->
+    <div class="admin-table-container" style="margin-top:1.5rem">
+      <table mat-table [dataSource]="compraSeleccionada()!.items ?? []" style="width:100%">
+
+        <ng-container matColumnDef="imagen">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let item">
+            @if (item.producto?.imagen) {
+              <img [src]="getImagenUrl(item.producto.imagen)" class="item-thumbnail" />
+            } @else {
+              <div class="item-thumbnail-placeholder">✿</div>
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="producto">
+          <th mat-header-cell *matHeaderCellDef>Producto</th>
+          <td mat-cell *matCellDef="let item">{{ item.producto?.nombre ?? '—' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="cantidad">
+          <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+          <td mat-cell *matCellDef="let item">{{ item.cantidad }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="precioCompra">
+          <th mat-header-cell *matHeaderCellDef>Precio compra</th>
+          <td mat-cell *matCellDef="let item">{{ item.precioCompra | currency:'COP':'symbol':'1.0-0' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="subtotal">
+          <th mat-header-cell *matHeaderCellDef>Subtotal</th>
+          <td mat-cell *matCellDef="let item"><strong>{{ item.subtotal | currency:'COP':'symbol':'1.0-0' }}</strong></td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="['imagen','producto','cantidad','precioCompra','subtotal']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['imagen','producto','cantidad','precioCompra','subtotal']"></tr>
+      </table>
+    </div>
+  </div>
+}
+
+<!-- ══════════════════════ VISTA: HISTORIAL PROVEEDOR ══════════════════════ -->
+@if (vista() === 'historial-proveedor' && proveedorHistorial()) {
+  <div class="historial-layout">
+
+    <!-- Info del proveedor -->
+    <div class="historial-header-card">
+      <div class="historial-prov-info">
+        <h3 class="historial-prov-nombre">{{ proveedorHistorial()!.proveedor.nombre }}</h3>
+        <div class="historial-prov-datos">
+          @if (proveedorHistorial()!.proveedor.nit) {
+            <span class="prov-dato-chip">NIT: {{ proveedorHistorial()!.proveedor.nit }}</span>
+          }
+          @if (proveedorHistorial()!.proveedor.telefono) {
+            <span class="prov-dato-chip">📞 {{ proveedorHistorial()!.proveedor.telefono }}</span>
+          }
+          @if (proveedorHistorial()!.proveedor.email) {
+            <span class="prov-dato-chip">✉️ {{ proveedorHistorial()!.proveedor.email }}</span>
+          }
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="historial-kpis">
+        <div class="historial-kpi">
+          <span class="hkpi-valor">{{ proveedorHistorial()!.stats.totalOrdenes }}</span>
+          <span class="hkpi-label">Órdenes totales</span>
+        </div>
+        <div class="historial-kpi destaca">
+          <span class="hkpi-valor">{{ proveedorHistorial()!.stats.totalInvertido | currency:'COP':'symbol':'1.0-0' }}</span>
+          <span class="hkpi-label">Total invertido (recibidos)</span>
+        </div>
+        <div class="historial-kpi">
+          <span class="hkpi-valor">
+            @if (proveedorHistorial()!.stats.ultimaCompra) {
+              {{ proveedorHistorial()!.stats.ultimaCompra | date:'dd/MM/yyyy' }}
+            } @else {
+              —
+            }
+          </span>
+          <span class="hkpi-label">Última orden</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de compras -->
+    @if (proveedorHistorial()!.compras.length === 0) {
+      <div class="empty-state">
+        <p>Este proveedor no tiene órdenes de compra aún.</p>
+      </div>
+    } @else {
+      <div class="admin-table-container" style="margin-top:1.5rem">
+        <table mat-table [dataSource]="proveedorHistorial()!.compras" style="width:100%">
+
+          <ng-container matColumnDef="numero">
+            <th mat-header-cell *matHeaderCellDef>Número</th>
+            <td mat-cell *matCellDef="let c"><span class="compra-numero">{{ c.numero }}</span></td>
+          </ng-container>
+
+          <ng-container matColumnDef="fecha">
+            <th mat-header-cell *matHeaderCellDef>Fecha</th>
+            <td mat-cell *matCellDef="let c">{{ c.fecha | date:'dd/MM/yyyy' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="items">
+            <th mat-header-cell *matHeaderCellDef>Productos</th>
+            <td mat-cell *matCellDef="let c">
+              <span class="items-resumen">
+                @for (item of (c.items ?? []); track item.id; let last = $last) {
+                  {{ item.producto?.nombre ?? '—' }}@if (!last) {, }
+                }
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef>Total</th>
+            <td mat-cell *matCellDef="let c"><strong>{{ c.total | currency:'COP':'symbol':'1.0-0' }}</strong></td>
+          </ng-container>
+
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let c">
+              <span [class]="'badge-estado ' + c.estado">
+                {{ c.estado === 'pedido' ? 'Pedido' : c.estado === 'recibido' ? 'Recibido' : 'Cancelado' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let c">
+              <button class="btn-ver-detalle" (click)="verDetalle(c)">Ver detalle</button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['numero','fecha','items','total','estado','acciones']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['numero','fecha','items','total','estado','acciones']" class="fila-compra"></tr>
+        </table>
+      </div>
+    }
+  </div>
+}
+
+<!-- ══════════════════════ VISTA: PROVEEDORES ══════════════════════ -->
+@if (vista() === 'proveedores') {
+  <div class="proveedores-layout">
+
+    <!-- Formulario izquierda -->
+    <div class="proveedor-form-card">
+      <h3 class="form-card-title">{{ editandoProveedor() ? 'Editar proveedor' : 'Nuevo proveedor' }}</h3>
+      <form [formGroup]="proveedorForm">
+        <mat-form-field>
+          <mat-label>Nombre *</mat-label>
+          <input matInput formControlName="nombre" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>NIT</mat-label>
+          <input matInput formControlName="nit" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Teléfono</mat-label>
+          <input matInput formControlName="telefono" />
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" />
+        </mat-form-field>
+
+        <div class="proveedor-form-acciones">
+          @if (editandoProveedor()) {
+            <button type="button" class="btn-cancelar-form" (click)="abrirNuevoProveedor()">Cancelar</button>
+          }
+          <button mat-raised-button color="primary" type="button"
+                  [disabled]="proveedorForm.invalid"
+                  (click)="guardarProveedor()">
+            {{ editandoProveedor() ? 'Guardar cambios' : 'Crear proveedor' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Lista derecha -->
+    <div class="proveedores-lista">
+      @if (proveedores().length === 0) {
+        <div class="empty-state"><p>No hay proveedores registrados aún.</p></div>
+      } @else {
+        @for (p of proveedores(); track p.id) {
+          <div class="proveedor-card" [class.editando]="editandoProveedor()?.id === p.id">
+            <div class="proveedor-info">
+              <span class="proveedor-nombre-card">{{ p.nombre }}</span>
+              @if (p.nit) { <span class="proveedor-dato">NIT: {{ p.nit }}</span> }
+              @if (p.telefono) { <span class="proveedor-dato">Tel: {{ p.telefono }}</span> }
+              @if (p.email) { <span class="proveedor-dato">{{ p.email }}</span> }
+            </div>
+            <div class="proveedor-card-acciones">
+              <button class="btn-ver-historial" (click)="verHistorial(p)">Ver historial</button>
+              <button class="btn-editar-venta" (click)="editarProveedor(p)">Editar</button>
+              <button class="btn-cancelar-venta" (click)="eliminarProveedor(p.id)">Desactivar</button>
+              <button class="btn-borrar-permanente" (click)="borrarProveedor(p.id)" title="Eliminar permanentemente">✕</button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </div>
+}

@@ -1,0 +1,124 @@
+<app-navbar />
+
+<!-- Hero banner -->
+<div class="hero-banner">
+  <div class="hero-content">
+    <p class="hero-subtitle">Colección exclusiva</p>
+    <h1 class="hero-title">Realza tu<br><em>Belleza Natural</em></h1>
+    <p class="hero-desc">Descubre nuestra selección de productos de belleza premium, elegidos especialmente para ti.</p>
+    <a routerLink="/carrito" class="cg-btn-primary">Ver mi carrito 🛒</a>
+  </div>
+  <div class="hero-decoration">
+    <div class="hero-logo-container">
+      <img src="/logo.png.jpeg" alt="Cherry Glam Beauty" class="hero-logo" />
+    </div>
+  </div>
+</div>
+
+<!-- Catálogo -->
+<div class="catalogo-section">
+  <div class="section-header">
+    <h2 class="section-title">Nuestros Productos</h2>
+    <p class="section-subtitle">Belleza que transforma</p>
+  </div>
+
+  <!-- Barra de búsqueda -->
+  <div class="busqueda-row">
+    <div class="busqueda-input-wrap">
+      <span class="busqueda-icon">🔍</span>
+      <input
+        class="busqueda-input"
+        type="text"
+        placeholder="Buscar producto..."
+        [value]="busqueda()"
+        (input)="busqueda.set($any($event.target).value)"
+      />
+    </div>
+  </div>
+
+  <!-- Filtros de categoría -->
+  @if (categorias().length > 0) {
+    <div class="filtros-categoria">
+      <button
+        [class]="'filtro-chip' + (categoriaActiva() === null ? ' activo' : '')"
+        (click)="categoriaActiva.set(null)">
+        Todos
+      </button>
+      @for (cat of categorias(); track cat.id) {
+        <button
+          [class]="'filtro-chip' + (categoriaActiva() === cat.nombre ? ' activo' : '')"
+          (click)="categoriaActiva.set(cat.nombre)">
+          {{ cat.nombre }}
+        </button>
+      }
+    </div>
+  }
+
+  <!-- Grid de productos -->
+  <div class="productos-grid">
+    @for (producto of productosFiltrados(); track producto.id) {
+      <div class="producto-card" (click)="irADetalle(producto.id)">
+
+        <div class="producto-imagen">
+          @if (producto.imagen) {
+            <img [src]="imagenUrl(producto.imagen)" [alt]="producto.nombre" class="producto-img" />
+          } @else {
+            <div class="imagen-placeholder">
+              <span class="imagen-icon">✿</span>
+            </div>
+          }
+          @if (producto.stock <= 5 && producto.stock > 0) {
+            <span class="badge-stock-bajo">¡Últimas unidades!</span>
+          }
+          @if (producto.stock === 0) {
+            <span class="badge-agotado">Agotado</span>
+          }
+        </div>
+
+        <div class="producto-info">
+          @if (producto.categoria) {
+            <span class="producto-categoria">{{ producto.categoria.nombre }}</span>
+          }
+          <h3 class="producto-nombre">{{ producto.nombre }}</h3>
+          @if (producto.descripcion) {
+            <p class="producto-descripcion">{{ producto.descripcion }}</p>
+          }
+          <div class="producto-footer">
+            <span class="producto-precio">{{ producto.precio | currency:'COP':'symbol':'1.0-0' }}</span>
+            <button
+              class="btn-agregar"
+              (click)="agregarAlCarrito(producto, $event)"
+              [disabled]="producto.stock === 0">
+              {{ producto.stock === 0 ? 'Agotado' : 'Agregar' }}
+            </button>
+          </div>
+        </div>
+
+      </div>
+    }
+  </div>
+
+  @if (productosFiltrados().length === 0 && productos().length > 0) {
+    <div class="empty-state">
+      <span class="empty-icon">🔍</span>
+      <p>No hay productos que coincidan con tu búsqueda.</p>
+      <button class="cg-btn-outline" (click)="busqueda.set(''); categoriaActiva.set(null)">Ver todos</button>
+    </div>
+  }
+
+  @if (productos().length === 0) {
+    <div class="empty-state">
+      <span class="empty-icon">✿</span>
+      <p>Cargando productos...</p>
+    </div>
+  }
+</div>
+
+<!-- Footer simple -->
+<footer class="site-footer">
+  <div class="footer-brand">
+    <img src="/logo.png.jpeg" alt="Cherry Glam" class="footer-logo" />
+    <span class="footer-name">Cherry Glam Beauty</span>
+  </div>
+  <p class="footer-tagline">Realza tu belleza natural</p>
+</footer>

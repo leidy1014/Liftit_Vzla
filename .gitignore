@@ -1,0 +1,28 @@
+# Dependencias
+node_modules/
+**/node_modules/
+
+# Variables de entorno (¡nunca subir contraseñas!)
+.env
+.env.local
+.env.production
+
+# Builds generados
+dist/
+**/dist/
+
+# Imágenes subidas por usuarios (van en Cloudinary en producción)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

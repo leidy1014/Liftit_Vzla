@@ -1,0 +1,136 @@
+/* === SECCIONES DEL FORMULARIO === */
+.form-section-label {
+  font-family: var(--cg-font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--cg-magenta);
+  margin-top: 0.5rem;
+  margin-bottom: -0.3rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--cg-pink-light);
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+}
+
+/* === UPLOAD DE IMAGEN === */
+.imagen-upload-area {
+  border: 2px dashed var(--cg-pink);
+  border-radius: 12px;
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.2s ease, background 0.2s ease;
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imagen-upload-area:hover {
+  border-color: var(--cg-magenta);
+  background: var(--cg-pink-light);
+}
+
+.imagen-placeholder-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 2rem;
+}
+
+.upload-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.upload-text {
+  font-family: var(--cg-font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--cg-magenta);
+}
+
+.upload-subtext {
+  font-size: 0.75rem;
+  color: var(--cg-text-muted);
+}
+
+.imagen-preview {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.imagen-change-hint {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(201, 27, 126, 0.75);
+  color: white;
+  text-align: center;
+  padding: 0.4rem;
+  font-size: 0.78rem;
+  font-family: var(--cg-font-body);
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.imagen-upload-area:hover .imagen-change-hint {
+  opacity: 1;
+}
+
+/* === INDICADORES DE TABLA === */
+.margen-bueno {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.margen-bajo {
+  background: #fff3e0;
+  color: #e65100;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.stock-bajo {
+  color: #c62828;
+  font-weight: 700;
+}
+
+/* === TABLA — MINIATURAS === */
+.tabla-thumbnail {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--cg-border);
+}
+
+.tabla-thumbnail-placeholder {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--cg-pink-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  color: var(--cg-pink);
+  border: 1px solid var(--cg-border);
+}

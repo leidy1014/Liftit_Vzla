@@ -1,0 +1,169 @@
+<!-- HEADER -->
+<div class="gas-header">
+  <div>
+    <h2 class="gas-titulo">Gastos</h2>
+    <p class="gas-subtitulo">Registra y controla los gastos del negocio</p>
+  </div>
+</div>
+
+<div class="gas-layout">
+
+  <!-- ══ PANEL IZQUIERDO: FORMULARIO ══ -->
+  <div class="gas-form-panel">
+    <h3 class="form-titulo">{{ editandoId() ? 'Editar gasto' : 'Nuevo gasto' }}</h3>
+
+    <label class="gas-label">Descripción
+      <input type="text" class="gas-input"
+             [(ngModel)]="form.descripcion"
+             placeholder="Ej: Pago arriendo junio" />
+    </label>
+
+    <label class="gas-label">Categoría
+      <select class="gas-select" [(ngModel)]="form.categoria">
+        @for (cat of categorias; track cat) {
+          <option [value]="cat">{{ cat }}</option>
+        }
+      </select>
+    </label>
+
+    <label class="gas-label">Monto
+      <input type="number" class="gas-input"
+             [(ngModel)]="form.monto"
+             min="1"
+             placeholder="Ej: 150000" />
+    </label>
+
+    <label class="gas-label">Método de pago</label>
+    <div class="gas-met-selector">
+      @for (m of metodos; track m.valor) {
+        <button type="button"
+                [class]="'gas-met-btn' + (form.metodoPago === m.valor ? ' activo' : '')"
+                (click)="form.metodoPago = m.valor">
+          {{ m.label }}
+        </button>
+      }
+    </div>
+
+    <label class="gas-label">Fecha
+      <input type="date" class="gas-input" [(ngModel)]="form.fecha" />
+    </label>
+
+    <div class="form-acciones">
+      @if (editandoId()) {
+        <button class="btn-cancelar-gas" type="button" (click)="cancelarEdicion()">Cancelar</button>
+      }
+      <button class="btn-guardar-gas"
+              [disabled]="guardando()"
+              type="button"
+              (click)="guardar()">
+        {{ guardando() ? 'Guardando...' : (editandoId() ? 'Guardar cambios' : 'Registrar gasto') }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ PANEL DERECHO: FILTROS + KPIs + TABLA ══ -->
+  <div class="gas-main">
+
+    <!-- Filtro período -->
+    <div class="gas-filtros-card">
+      <div class="periodo-chips">
+        <button [class]="periodo() === 'mes' ? 'chip activo' : 'chip'" (click)="aplicarPeriodo('mes')">Este mes</button>
+        <button [class]="periodo() === 'mes_anterior' ? 'chip activo' : 'chip'" (click)="aplicarPeriodo('mes_anterior')">Mes anterior</button>
+        <button [class]="periodo() === 'anio' ? 'chip activo' : 'chip'" (click)="aplicarPeriodo('anio')">Este año</button>
+        <button [class]="periodo() === 'personalizado' ? 'chip activo' : 'chip'" (click)="aplicarPeriodo('personalizado')">Personalizado</button>
+      </div>
+
+      @if (periodo() === 'personalizado') {
+        <div class="rango-row">
+          <label class="rango-label">Desde
+            <input type="date" class="gas-input-sm" [value]="desde()" (change)="desde.set($any($event.target).value)" />
+          </label>
+          <label class="rango-label">Hasta
+            <input type="date" class="gas-input-sm" [value]="hasta()" (change)="hasta.set($any($event.target).value)" />
+          </label>
+          <button class="btn-aplicar" (click)="cargar()">Aplicar</button>
+        </div>
+      }
+    </div>
+
+    <!-- KPIs -->
+    @if (resumen()) {
+      <div class="kpi-gas-row">
+
+        <div class="kpi-gas total">
+          <div class="kpi-gas-top">
+            <span class="kpi-gas-icon">💸</span>
+            <span class="kpi-gas-label">Total gastos</span>
+          </div>
+          <span class="kpi-gas-valor">{{ resumen()!.total | currency:'COP':'symbol':'1.0-0' }}</span>
+          <span class="kpi-gas-sub">{{ resumen()!.cantidad }} registros</span>
+        </div>
+
+        @for (entry of $any(resumen()!.porCategoria) | keyvalue; track entry.key) {
+          <div class="kpi-gas cat" [style.border-left-color]="colorCategoria($any(entry.key))">
+            <div class="kpi-gas-top">
+              <span class="kpi-gas-label">{{ entry.key }}</span>
+              <span class="kpi-gas-pct">{{ porcentajeCategoria(+entry.value) }}%</span>
+            </div>
+            <span class="kpi-gas-valor sm">{{ +entry.value | currency:'COP':'symbol':'1.0-0' }}</span>
+            <div class="kpi-gas-bar-wrap">
+              <div class="kpi-gas-bar" [style.width.%]="porcentajeCategoria(+entry.value)"
+                   [style.background]="colorCategoria($any(entry.key))"></div>
+            </div>
+          </div>
+        }
+
+      </div>
+    }
+
+    <!-- Tabla de gastos -->
+    <div class="gas-tabla-card">
+      <div class="gas-tabla-header">
+        <span class="gas-tabla-titulo">Detalle de gastos</span>
+        <span class="gas-total-badge">
+          Total: {{ totalGastosLista() | currency:'COP':'symbol':'1.0-0' }}
+        </span>
+      </div>
+
+      @if (cargando()) {
+        <div class="gas-cargando"><div class="spinner"></div><p>Cargando...</p></div>
+      } @else if (gastos().length === 0) {
+        <div class="gas-vacio">No hay gastos registrados en este período.</div>
+      } @else {
+        <table class="gas-tabla">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Descripción</th>
+              <th>Categoría</th>
+              <th>Método</th>
+              <th class="th-num">Monto</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (g of gastos(); track g.id) {
+              <tr [class.fila-editando]="editandoId() === g.id">
+                <td class="td-fecha">{{ g.fecha | date:'dd/MM/yyyy' }}</td>
+                <td class="td-desc">{{ g.descripcion }}</td>
+                <td>
+                  <span class="badge-cat" [style.background]="colorCategoria(g.categoria) + '22'"
+                        [style.color]="colorCategoria(g.categoria)">
+                    {{ g.categoria }}
+                  </span>
+                </td>
+                <td class="td-metodo">{{ labelMetodo(g.metodoPago) }}</td>
+                <td class="td-num td-monto">{{ g.monto | currency:'COP':'symbol':'1.0-0' }}</td>
+                <td class="td-acciones">
+                  <button class="btn-edit-gas" title="Editar" (click)="editar(g)">✏️</button>
+                  <button class="btn-del-gas" title="Eliminar" (click)="eliminar(g)">🗑</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+
+  </div>
+</div>

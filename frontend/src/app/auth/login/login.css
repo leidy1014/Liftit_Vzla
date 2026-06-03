@@ -1,0 +1,222 @@
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+/* === PANEL IZQUIERDO === */
+.login-side {
+  background: linear-gradient(145deg, var(--cg-magenta) 0%, #E91E8C 50%, var(--cg-pink) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-side-content {
+  text-align: center;
+  color: white;
+  z-index: 1;
+  position: relative;
+}
+
+.login-logo {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: rgba(255,255,255,0.2);
+  padding: 8px;
+  margin-bottom: 1.2rem;
+  display: block;
+}
+
+.login-brand-name {
+  font-family: var(--cg-font-heading);
+  font-size: 2.8rem;
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+  letter-spacing: 1px;
+}
+
+.login-brand-tagline {
+  font-family: var(--cg-font-body);
+  font-size: 0.75rem;
+  letter-spacing: 5px;
+  font-weight: 500;
+  margin-bottom: 2rem;
+  opacity: 0.85;
+}
+
+.login-brand-slogan {
+  font-family: var(--cg-font-heading);
+  font-size: 1.1rem;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+/* Círculos decorativos de fondo */
+.login-circles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+}
+
+.c1 {
+  width: 300px; height: 300px;
+  top: -80px; right: -80px;
+}
+.c2 {
+  width: 200px; height: 200px;
+  bottom: 60px; left: -60px;
+}
+.c3 {
+  width: 140px; height: 140px;
+  bottom: -30px; right: 40px;
+}
+
+/* === PANEL DERECHO === */
+.login-form-side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  background: #fafafa;
+}
+
+.login-form-container {
+  width: 100%;
+  max-width: 380px;
+}
+
+.form-title {
+  font-family: var(--cg-font-heading);
+  font-size: 2rem;
+  color: var(--cg-text);
+  margin-bottom: 0.4rem;
+}
+
+.form-subtitle {
+  font-size: 0.9rem;
+  color: var(--cg-text-muted);
+  margin-bottom: 2.5rem;
+}
+
+/* Form fields */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--cg-text);
+  letter-spacing: 0.3px;
+}
+
+.field-input {
+  padding: 0.8rem 1rem;
+  border: 1.5px solid var(--cg-border);
+  border-radius: 10px;
+  font-family: var(--cg-font-body);
+  font-size: 0.9rem;
+  color: var(--cg-text);
+  background: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+
+.field-input:focus {
+  border-color: var(--cg-magenta);
+  box-shadow: 0 0 0 3px rgba(201, 27, 126, 0.1);
+}
+
+.field-input::placeholder {
+  color: #bbb;
+}
+
+/* Error */
+.error-msg {
+  background: #fff0f0;
+  border: 1px solid #ffcdd2;
+  color: #c62828;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+/* Botón */
+.btn-login {
+  background: linear-gradient(135deg, var(--cg-magenta), var(--cg-pink));
+  color: white;
+  border: none;
+  padding: 0.9rem;
+  border-radius: 12px;
+  font-family: var(--cg-font-body);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.3px;
+  margin-top: 0.5rem;
+}
+
+.btn-login:hover:not(:disabled) {
+  opacity: 0.9;
+  box-shadow: 0 6px 20px rgba(201, 27, 126, 0.35);
+  transform: translateY(-2px);
+}
+
+.btn-login:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Back link */
+.back-link {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.back-link a {
+  font-size: 0.85rem;
+  color: var(--cg-text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.back-link a:hover {
+  color: var(--cg-magenta);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+  .login-side {
+    min-height: 200px;
+    padding: 2rem;
+  }
+  .login-brand-name {
+    font-size: 2rem;
+  }
+}

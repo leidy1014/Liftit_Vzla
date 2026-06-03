@@ -1,0 +1,49 @@
+services:
+  # ── Backend NestJS ──
+  - type: web
+    name: cherry-glam-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start:prod
+    envVars:
+      - key: DB_HOST
+        fromDatabase:
+          name: cherry-glam-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: cherry-glam-db
+          property: port
+      - key: DB_USER
+        fromDatabase:
+          name: cherry-glam-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: cherry-glam-db
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: cherry-glam-db
+          property: database
+      - key: JWT_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        sync: false
+
+  # ── Frontend Angular ──
+  - type: static
+    name: cherry-glam-frontend
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist/frontend/browser
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+databases:
+  - name: cherry-glam-db
+    databaseName: cherry_glam
+    user: cherry_admin

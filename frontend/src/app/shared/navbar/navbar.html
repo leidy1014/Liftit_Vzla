@@ -1,0 +1,40 @@
+<header class="navbar">
+  <div class="navbar-container">
+
+    <!-- Logo -->
+    <a routerLink="/productos" class="navbar-brand">
+      <img src="/logo.png.jpeg" alt="Cherry Glam" class="navbar-logo" />
+      <div class="brand-text">
+        <span class="brand-name">Cherry Glam</span>
+        <span class="brand-tagline">BEAUTY</span>
+      </div>
+    </a>
+
+    <!-- Links centrales -->
+    <nav class="navbar-links">
+      <a routerLink="/productos" class="nav-link">Catálogo</a>
+    </nav>
+
+    <!-- Acciones derecha -->
+    <div class="navbar-actions">
+      @if (authService.estaLogueado()) {
+        <a routerLink="/carrito" class="nav-action-btn">
+          <span class="action-icon">🛒</span>
+          <span>Carrito</span>
+        </a>
+        @if (authService.getRol() === 'admin') {
+          <a routerLink="/admin" class="nav-action-btn admin-btn">
+            <span>Admin</span>
+          </a>
+        }
+        <button class="nav-action-btn logout-btn" (click)="authService.logout()">
+          Salir
+        </button>
+      } @else {
+        <a routerLink="/register" class="nav-action-btn">Crear cuenta</a>
+        <a routerLink="/login" class="nav-login-btn">Iniciar Sesión</a>
+      }
+    </div>
+
+  </div>
+</header>

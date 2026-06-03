@@ -1,0 +1,67 @@
+<div class="login-page">
+
+  <!-- Panel izquierdo decorativo -->
+  <div class="login-side">
+    <div class="login-side-content">
+      <img src="/logo.png.jpeg" alt="Cherry Glam" class="login-logo" />
+      <h2 class="login-brand-name">Cherry Glam</h2>
+      <p class="login-brand-tagline">BEAUTY</p>
+      <p class="login-brand-slogan">Realza tu Belleza Natural</p>
+    </div>
+    <div class="login-circles">
+      <div class="circle c1"></div>
+      <div class="circle c2"></div>
+      <div class="circle c3"></div>
+    </div>
+  </div>
+
+  <!-- Panel derecho: formulario -->
+  <div class="login-form-side">
+    <div class="login-form-container">
+      <h1 class="form-title">Bienvenida</h1>
+      <p class="form-subtitle">Inicia sesión para continuar</p>
+
+      <form [formGroup]="form" (ngSubmit)="login()" class="login-form">
+
+        <div class="form-field">
+          <label class="field-label">Correo electrónico</label>
+          <input
+            class="field-input"
+            type="email"
+            formControlName="email"
+            placeholder="tu@correo.com"
+          />
+        </div>
+
+        <div class="form-field">
+          <label class="field-label">Contraseña</label>
+          <input
+            class="field-input"
+            type="password"
+            formControlName="password"
+            placeholder="••••••••"
+          />
+        </div>
+
+        @if (errorMensaje()) {
+          <div class="error-msg">
+            <span>⚠</span> {{ errorMensaje() }}
+          </div>
+        }
+
+        <button type="submit" class="btn-login" [disabled]="form.invalid">
+          Iniciar Sesión
+        </button>
+
+      </form>
+
+      <p class="back-link" style="margin-top: 1rem;">
+        ¿No tienes cuenta? <a routerLink="/register">Crear cuenta</a>
+      </p>
+      <p class="back-link">
+        <a routerLink="/productos">← Volver al catálogo</a>
+      </p>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,102 @@
+<div class="admin-shell">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <img src="/logo.png.jpeg" alt="Cherry Glam" class="sidebar-logo" />
+      <div>
+        <span class="brand-name">Cherry Glam</span>
+        <span class="brand-sub">Panel Admin</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item nav-item-dashboard">
+        <span class="nav-icon">🏠</span>
+        <span>Inicio</span>
+      </a>
+
+      <p class="nav-section-label">Gestión</p>
+      <a routerLink="/admin/productos" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📦</span>
+        <span>Productos</span>
+      </a>
+      <a routerLink="/admin/categorias" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">🏷️</span>
+        <span>Categorías</span>
+      </a>
+      <a routerLink="/admin/inventario" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📋</span>
+        <span>Inventario</span>
+      </a>
+      <a routerLink="/admin/caja" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">💳</span>
+        <span>Caja / Pagos</span>
+      </a>
+      <a routerLink="/admin/ventas" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">💰</span>
+        <span>Ventas</span>
+      </a>
+      <a routerLink="/admin/compras" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">🛒</span>
+        <span>Compras</span>
+      </a>
+      <a routerLink="/admin/clientes" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">👥</span>
+        <span>Clientes</span>
+      </a>
+
+      <a routerLink="/admin/gastos" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">💸</span>
+        <span>Gastos</span>
+      </a>
+      <a routerLink="/admin/reportes" routerLinkActive="active" class="nav-item">
+        <span class="nav-icon">📊</span>
+        <span>Reportes</span>
+      </a>
+
+      <p class="nav-section-label" style="margin-top: 1.5rem;">Tienda</p>
+      <a routerLink="/productos" class="nav-item">
+        <span class="nav-icon">🛍️</span>
+        <span>Ver catálogo</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-logout" (click)="authService.logout()">
+        <span>↩</span> Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <!-- Contenido principal -->
+  <main class="admin-main">
+    <div class="admin-content">
+      <router-outlet />
+    </div>
+  </main>
+
+</div>
+
+<!-- ══ MODAL DE CONFIRMACIÓN GLOBAL ══ -->
+@if (confirmService.mostrar()) {
+  <div class="confirm-backdrop" (click)="confirmService.cancelar()"></div>
+  <div class="confirm-card">
+    <div class="confirm-icono">
+      @if (confirmService.config().tipo === 'peligro') { ⚠️ } @else { ❓ }
+    </div>
+    <h4 class="confirm-titulo">{{ confirmService.config().titulo }}</h4>
+    <p class="confirm-mensaje">{{ confirmService.config().mensaje }}</p>
+    <div class="confirm-acciones">
+      <button class="confirm-btn-cancelar" type="button" (click)="confirmService.cancelar()">
+        Cancelar
+      </button>
+      <button
+        [class]="'confirm-btn-ok ' + (confirmService.config().tipo === 'peligro' ? 'peligro' : 'normal')"
+        type="button"
+        (click)="confirmService.aceptar()">
+        {{ confirmService.config().textoConfirmar ?? 'Confirmar' }}
+      </button>
+    </div>
+  </div>
+}
