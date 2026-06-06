@@ -8,7 +8,7 @@ async function bootstrap() {
   const originesPermitidos = [
     'http://localhost:4200',
     process.env.FRONTEND_URL,
-  ].filter(Boolean);
+  ].filter((url): url is string => Boolean(url));
 
   app.enableCors({
     origin: originesPermitidos,
