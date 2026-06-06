@@ -10,6 +10,7 @@ import { Categorias } from '../../categorias/categorias';
 import { Producto } from '../../productos/producto.interface';
 import { Categoria } from '../../categorias/categoria.interface';
 import { ToastService } from '../../shared/toast/toast.service';
+import { ConfirmService } from '../../shared/confirm/confirm.service';
 import { environment } from '../../../environments/environment';
 
 @Component({
@@ -35,6 +36,7 @@ export class AdminProductos implements OnInit {
     private categoriasService: Categorias,
     private fb: FormBuilder,
     private toast: ToastService,
+    private confirm: ConfirmService,
   ) {
     this.form = this.fb.group({
       nombre: ['', Validators.required],
@@ -145,9 +147,21 @@ export class AdminProductos implements OnInit {
   }
 
   eliminar(id: number) {
-    this.productosService.delete(id).subscribe(() => {
-      this.toast.exito('Producto eliminado');
-      this.cargarProductos();
+    this.confirm.confirm({
+      titulo: 'Eliminar producto',
+      mensaje: 'Esta acción no se puede deshacer. ¿Seguro que quieres eliminar este producto?',
+      textoConfirmar: 'Eliminar',
+      tipo: 'peligro',
+    }, () => {
+      this.productosService.delete(id).subscribe({
+        next: () => {
+          this.toast.exito('Producto eliminado');
+          this.cargarProductos();
+        },
+        error: (err) => {
+          this.toast.error(err.error?.message || 'No se pudo eliminar. Puede que el producto esté en uso en ventas o compras.');
+        },
+      });
     });
   }
 
