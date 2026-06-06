@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://REEMPLAZAR-CON-URL-DE-RENDER.onrender.com',
+  apiUrl: 'https://cherry-glam-backend-production-1c21.up.railway.app',
 };
