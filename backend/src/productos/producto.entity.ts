@@ -42,6 +42,9 @@ export class Producto {
   @Column({ nullable: true })
   imagen: string;
 
+  @Column('simple-json', { nullable: true, default: '[]' })
+  imagenes: string[];
+
   @ManyToOne(() => Categoria, { nullable: true })
   @JoinColumn({ name: 'categoria_id' })
   categoria: Categoria;

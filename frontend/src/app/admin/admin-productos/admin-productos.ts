@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { ProductosService } from '../../productos/productos';
 import { Categorias } from '../../categorias/categorias';
 import { Producto } from '../../productos/producto.interface';
@@ -15,7 +16,7 @@ import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-admin-productos',
-  imports: [ReactiveFormsModule, MatTableModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule],
+  imports: [ReactiveFormsModule, MatTableModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, CdkTextareaAutosize],
   templateUrl: './admin-productos.html',
   styleUrl: './admin-productos.css',
 })
@@ -172,5 +173,34 @@ export class AdminProductos implements OnInit {
   getMargen(producto: Producto): number {
     if (!producto.costo || producto.costo === 0) return 0;
     return Math.round(((producto.precio - producto.costo) / producto.precio) * 100);
+  }
+
+  onImagenExtraSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    const editando = this.productoEditando();
+    if (!file || !editando) return;
+    this.productosService.agregarImagen(editando.id, file).subscribe({
+      next: (p) => {
+        this.productoEditando.set(p);
+        this.toast.exito('Imagen agregada');
+        this.cargarProductos();
+      },
+      error: () => this.toast.error('Error al subir la imagen'),
+    });
+    input.value = '';
+  }
+
+  eliminarImagenExtra(filename: string) {
+    const editando = this.productoEditando();
+    if (!editando) return;
+    this.productosService.eliminarImagen(editando.id, filename).subscribe({
+      next: (p) => {
+        this.productoEditando.set(p);
+        this.toast.exito('Imagen eliminada');
+        this.cargarProductos();
+      },
+      error: () => this.toast.error('Error al eliminar la imagen'),
+    });
   }
 }

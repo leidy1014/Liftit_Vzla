@@ -41,7 +41,7 @@
       </mat-form-field>
       <mat-form-field>
         <mat-label>Descripción</mat-label>
-        <input matInput formControlName="descripcion" />
+        <textarea matInput formControlName="descripcion" rows="4" cdkTextareaAutosize></textarea>
       </mat-form-field>
       <mat-form-field>
         <mat-label>Categoría</mat-label>
@@ -99,6 +99,22 @@
           <input matInput formControlName="codigoBarras" placeholder="Ej: 7702001234567" />
         </mat-form-field>
       </div>
+
+      @if (productoEditando()) {
+        <p class="form-section-label">Fotos adicionales</p>
+        <div class="imagenes-extra">
+          @for (img of productoEditando()!.imagenes ?? []; track img) {
+            <div class="imagen-extra-item">
+              <img [src]="getImagenUrl(img)" class="imagen-extra-thumb" alt="foto" />
+              <button type="button" class="btn-borrar-imagen" (click)="eliminarImagenExtra(img)" title="Eliminar foto">✕</button>
+            </div>
+          }
+          <label class="btn-agregar-imagen" title="Agregar foto">
+            <span>＋</span>
+            <input type="file" accept="image/jpeg,image/png,image/webp" style="display:none" (change)="onImagenExtraSelected($event)" />
+          </label>
+        </div>
+      }
 
       <button mat-raised-button color="primary" type="submit">
         {{ productoEditando() ? 'Guardar cambios' : 'Crear producto' }}

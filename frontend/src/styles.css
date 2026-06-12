@@ -1,18 +1,18 @@
 :root {
-  --cg-magenta: #C91B7E;
-  --cg-magenta-dark: #9C1460;
-  --cg-pink: #F06292;
-  --cg-pink-light: #FCE4EC;
-  --cg-pink-medium: #F8BBD9;
+  --cg-magenta: #E31E24;
+  --cg-magenta-dark: #B51519;
+  --cg-pink: #FF5252;
+  --cg-pink-light: #1E1E1E;
+  --cg-pink-medium: #2A2A2A;
   --cg-white: #FFFFFF;
-  --cg-text: #333333;
+  --cg-text: #1A1A1A;
   --cg-text-muted: #777777;
-  --cg-border: #f0d0e0;
-  --cg-shadow: 0 4px 20px rgba(201, 27, 126, 0.12);
-  --cg-shadow-hover: 0 8px 32px rgba(201, 27, 126, 0.22);
-  --cg-radius: 12px;
-  --cg-font-heading: 'Playfair Display', serif;
-  --cg-font-body: 'Poppins', sans-serif;
+  --cg-border: #333333;
+  --cg-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  --cg-shadow-hover: 0 8px 32px rgba(227, 30, 36, 0.35);
+  --cg-radius: 4px;
+  --cg-font-heading: 'Barlow Condensed', sans-serif;
+  --cg-font-body: 'Barlow', sans-serif;
 }
 
 * {
@@ -23,43 +23,47 @@
 
 body {
   font-family: var(--cg-font-body);
-  background-color: #fafafa;
-  color: var(--cg-text);
+  background-color: #F5F5F5;
+  color: #1A1A1A;
+  overflow-x: hidden;
 }
 
 h1, h2, h3 {
   font-family: var(--cg-font-heading);
 }
 
-/* Botones primarios Cherry Glam */
+/* Botón primario Liftit */
 .cg-btn-primary {
-  background: linear-gradient(135deg, var(--cg-magenta), var(--cg-pink));
+  background: var(--cg-magenta);
   color: white;
   border: none;
-  padding: 0.7rem 1.8rem;
-  border-radius: 30px;
-  font-family: var(--cg-font-body);
-  font-weight: 500;
-  font-size: 0.85rem;
-  letter-spacing: 0.5px;
+  padding: 0.75rem 2rem;
+  border-radius: var(--cg-radius);
+  font-family: var(--cg-font-heading);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 1px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   text-transform: uppercase;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .cg-btn-primary:hover {
-  background: linear-gradient(135deg, var(--cg-magenta-dark), var(--cg-magenta));
+  background: var(--cg-magenta-dark);
   box-shadow: var(--cg-shadow-hover);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
-/* Cards Cherry Glam */
+/* Cards */
 .cg-card {
-  background: white;
+  background: #1E1E1E;
   border-radius: var(--cg-radius);
   box-shadow: var(--cg-shadow);
   overflow: hidden;
   transition: box-shadow 0.3s ease, transform 0.3s ease;
+  border: 1px solid #2A2A2A;
 }
 
 .cg-card:hover {
@@ -74,30 +78,30 @@ h1, h2, h3 {
   justify-content: space-between;
   margin-bottom: 2rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid var(--cg-pink-light);
+  border-bottom: 2px solid #EEEEEE;
 }
 
 .admin-page-title {
   font-family: var(--cg-font-heading) !important;
   font-size: 1.6rem !important;
-  color: var(--cg-text) !important;
+  color: #1A1A1A !important;
   margin: 0 !important;
 }
 
 .admin-page-subtitle {
   font-size: 0.85rem;
-  color: var(--cg-text-muted);
+  color: #777777;
   margin-top: 0.2rem;
 }
 
 .admin-form-card {
   background: white;
-  border-radius: 14px;
-  border: 1px solid var(--cg-border);
+  border-radius: 8px;
+  border: 1px solid #E0E0E0;
   padding: 1.5rem;
   margin-bottom: 2rem;
   max-width: 520px;
-  box-shadow: 0 2px 12px rgba(201, 27, 126, 0.06);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
 .admin-form-card form {
@@ -108,36 +112,35 @@ h1, h2, h3 {
 
 .admin-table-container {
   background: white;
-  border-radius: 14px;
-  border: 1px solid var(--cg-border);
+  border-radius: 8px;
+  border: 1px solid #E0E0E0;
   overflow: hidden;
-  box-shadow: 0 2px 12px rgba(201, 27, 126, 0.06);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
-/* Botón de acción primario del admin */
 .btn-admin-primary {
-  background: linear-gradient(135deg, var(--cg-magenta), var(--cg-pink)) !important;
+  background: var(--cg-magenta) !important;
   color: white !important;
   border: none !important;
   padding: 0.5rem 1.4rem !important;
-  border-radius: 25px !important;
+  border-radius: var(--cg-radius) !important;
   font-family: var(--cg-font-body) !important;
   font-size: 0.85rem !important;
   font-weight: 600 !important;
   cursor: pointer !important;
-  transition: all 0.3s ease !important;
+  transition: all 0.2s ease !important;
 }
 
 .btn-admin-primary:hover {
-  opacity: 0.88 !important;
-  box-shadow: 0 4px 15px rgba(201, 27, 126, 0.3) !important;
+  background: var(--cg-magenta-dark) !important;
+  box-shadow: 0 4px 15px rgba(227, 30, 36, 0.3) !important;
 }
 
 /* === TOAST NOTIFICATIONS === */
 .cherry-toast .mdc-snackbar__surface {
-  border-radius: 14px !important;
+  border-radius: 4px !important;
   padding: 0.2rem 0.5rem !important;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.18) !important;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3) !important;
   min-width: 220px !important;
   max-width: 360px !important;
 }
@@ -145,28 +148,21 @@ h1, h2, h3 {
 .cherry-toast .mdc-snackbar__label {
   font-family: var(--cg-font-body) !important;
   font-size: 0.88rem !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   letter-spacing: 0.2px !important;
 }
 
 .cherry-toast-exito .mdc-snackbar__surface {
-  background: linear-gradient(135deg, var(--cg-magenta), var(--cg-pink)) !important;
+  background: #1B5E20 !important;
   color: white !important;
 }
 
 .cherry-toast-error .mdc-snackbar__surface {
-  background: #c62828 !important;
+  background: #B71C1C !important;
   color: white !important;
 }
 
-/* Scrollbar personalizado */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--cg-pink-light);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--cg-pink);
-  border-radius: 3px;
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #1A1A1A; }
+::-webkit-scrollbar-thumb { background: var(--cg-magenta); border-radius: 3px; }

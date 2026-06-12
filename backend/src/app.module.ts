@@ -8,12 +8,7 @@ import { UsuariosModule } from './usuarios/usuarios.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoriasModule } from './categorias/categorias.module';
 import { CarritoModule } from './carrito/carrito.module';
-import { InventarioModule } from './inventario/inventario.module';
-import { VentasModule } from './ventas/ventas.module';
-import { ComprasModule } from './compras/compras.module';
 import { ClientesModule } from './clientes/clientes.module';
-import { PagosModule } from './pagos/pagos.module';
-import { GastosModule } from './gastos/gastos.module';
 
 @Module({
   imports: [
@@ -37,12 +32,7 @@ import { GastosModule } from './gastos/gastos.module';
     AuthModule,
     CategoriasModule,
     CarritoModule,
-    InventarioModule,
-    VentasModule,
-    ComprasModule,
     ClientesModule,
-    PagosModule,
-    GastosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

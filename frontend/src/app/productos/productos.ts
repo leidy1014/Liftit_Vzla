@@ -38,4 +38,13 @@ export class ProductosService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
+  agregarImagen(id: number, file: File): Observable<Producto> {
+    const formData = new FormData();
+    formData.append('imagen', file);
+    return this.http.post<Producto>(`${this.apiUrl}/${id}/imagenes`, formData);
+  }
+
+  eliminarImagen(id: number, filename: string): Observable<Producto> {
+    return this.http.delete<Producto>(`${this.apiUrl}/${id}/imagenes/${filename}`);
+  }
 }

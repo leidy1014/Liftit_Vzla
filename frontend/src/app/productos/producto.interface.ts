@@ -13,5 +13,6 @@ export interface Producto {
   codigoBarras?: string;
   activo: boolean;
   imagen?: string;
+  imagenes?: string[];
   categoria?: Categoria;
 }

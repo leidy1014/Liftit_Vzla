@@ -1,13 +1,13 @@
 services:
   postgres:
     image: postgres:16
-    container_name: cherry_glam_db
+    container_name: catalogo_liftit_db
     environment:
-      POSTGRES_USER: cherry_admin
-      POSTGRES_PASSWORD: cherry1234
-      POSTGRES_DB: cherry_glam
+      POSTGRES_USER: liftit_admin
+      POSTGRES_PASSWORD: liftit1234
+      POSTGRES_DB: catalogo_liftit
     ports:
-      - '5432:5432'
+      - '5433:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

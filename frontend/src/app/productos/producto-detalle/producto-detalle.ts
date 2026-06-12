@@ -19,6 +19,16 @@ export class ProductoDetalle implements OnInit {
     producto = signal<Producto | null>(null);
     cantidad = signal(1);
     cargando = signal(true);
+    descripcionExpandida = signal(false);
+    imagenActiva = signal<string | null>(null);
+    readonly LIMITE_DESCRIPCION = 300;
+
+    get descripcionCorta(): string {
+        const desc = this.producto()?.descripcion ?? '';
+        return desc.length > this.LIMITE_DESCRIPCION
+            ? desc.slice(0, this.LIMITE_DESCRIPCION) + '...'
+            : desc;
+    }
 
     constructor(
         private route: ActivatedRoute,
@@ -32,7 +42,7 @@ export class ProductoDetalle implements OnInit {
     ngOnInit() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this.productosService.getById(id).subscribe({
-            next: (p) => { this.producto.set(p); this.cargando.set(false); },
+            next: (p) => { this.producto.set(p); this.imagenActiva.set(p.imagen ?? null); this.cargando.set(false); },
             error: () => { this.cargando.set(false); this.router.navigate(['/productos']); },
         });
     }
@@ -68,7 +78,8 @@ export class ProductoDetalle implements OnInit {
     pedirPorWhatsapp() {
         const p = this.producto();
         if (!p) return;
-        const msg = `Hola Cherry Glam! Me interesa este producto:\n\n*${p.nombre}*\nCantidad: ${this.cantidad()}\nPrecio: ${p.precio * this.cantidad()}\n\n¿Está disponible?`;
+        const precio = (p.precio * this.cantidad()).toLocaleString('es-CO');
+        const msg = `Hola! Deseo realizar este pedido\n\n*${p.nombre}*\nCantidad: ${this.cantidad()}\nPrecio: $${precio}\n\n¿Está disponible?`;
         window.open(`https://wa.me/573189605857?text=${encodeURIComponent(msg)}`, '_blank');
     }
 

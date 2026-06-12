@@ -25,20 +25,41 @@
 
       <div class="detalle-grid">
 
-        <!-- Imagen -->
-        <div class="detalle-imagen-wrap">
-          @if (producto()!.imagen) {
-            <img [src]="getImagenUrl(producto()!.imagen!)" [alt]="producto()!.nombre" class="detalle-imagen" />
-          } @else {
-            <div class="detalle-imagen-placeholder">
-              <span>✿</span>
+        <!-- Galería -->
+        <div class="detalle-galeria">
+          <div class="detalle-imagen-wrap">
+            @if (imagenActiva()) {
+              <img [src]="getImagenUrl(imagenActiva()!)" [alt]="producto()!.nombre" class="detalle-imagen" />
+            } @else {
+              <div class="detalle-imagen-placeholder"><span>✿</span></div>
+            }
+            @if (producto()!.stock === 0) {
+              <div class="detalle-agotado-overlay">Agotado</div>
+            }
+            @if (producto()!.stock > 0 && producto()!.stock <= 5) {
+              <div class="detalle-ultimas">¡Últimas {{ producto()!.stock }} unidades!</div>
+            }
+          </div>
+
+          @if ((producto()!.imagenes?.length ?? 0) > 0) {
+            <div class="galeria-miniaturas">
+              @if (producto()!.imagen) {
+                <img
+                  [src]="getImagenUrl(producto()!.imagen!)"
+                  class="miniatura"
+                  [class.activa]="imagenActiva() === producto()!.imagen"
+                  (click)="imagenActiva.set(producto()!.imagen!)"
+                  alt="foto principal" />
+              }
+              @for (img of producto()!.imagenes; track img) {
+                <img
+                  [src]="getImagenUrl(img)"
+                  class="miniatura"
+                  [class.activa]="imagenActiva() === img"
+                  (click)="imagenActiva.set(img)"
+                  alt="foto adicional" />
+              }
             </div>
-          }
-          @if (producto()!.stock === 0) {
-            <div class="detalle-agotado-overlay">Agotado</div>
-          }
-          @if (producto()!.stock > 0 && producto()!.stock <= 5) {
-            <div class="detalle-ultimas">¡Últimas {{ producto()!.stock }} unidades!</div>
           }
         </div>
 
@@ -58,7 +79,16 @@
           </div>
 
           @if (producto()!.descripcion) {
-            <p class="detalle-descripcion">{{ producto()!.descripcion }}</p>
+            <div class="detalle-descripcion-wrap">
+              <p class="detalle-descripcion">
+                {{ descripcionExpandida() ? producto()!.descripcion : descripcionCorta }}
+              </p>
+              @if ((producto()!.descripcion?.length ?? 0) > LIMITE_DESCRIPCION) {
+                <button class="btn-leer-mas" (click)="descripcionExpandida.set(!descripcionExpandida())">
+                  {{ descripcionExpandida() ? 'Leer menos ▲' : 'Leer más ▼' }}
+                </button>
+              }
+            </div>
           }
 
           <!-- Selector de cantidad -->
@@ -106,8 +136,8 @@
 <!-- Footer -->
 <footer class="site-footer">
   <div class="footer-brand">
-    <img src="/logo.png.jpeg" alt="Cherry Glam" class="footer-logo" />
-    <span class="footer-name">Cherry Glam Beauty</span>
+    <img src="/logo.png.jpeg" alt="Liftit Fitness" class="footer-logo" />
+    <span class="footer-name">LIFTIT FITNESS</span>
   </div>
-  <p class="footer-tagline">Realza tu belleza natural</p>
+  <p class="footer-tagline">Entrena duro. Rinde más.</p>
 </footer>

@@ -50,4 +50,17 @@ export class ProductosService {
     await this.findOne(id);
     await this.productoRepository.delete(id);
   }
+
+  async agregarImagen(id: number, filename: string): Promise<Producto> {
+    const producto = await this.findOne(id);
+    const imagenes = Array.isArray(producto.imagenes) ? producto.imagenes : [];
+    producto.imagenes = [...imagenes, filename];
+    return this.productoRepository.save(producto);
+  }
+
+  async eliminarImagen(id: number, filename: string): Promise<Producto> {
+    const producto = await this.findOne(id);
+    producto.imagenes = (producto.imagenes ?? []).filter(img => img !== filename);
+    return this.productoRepository.save(producto);
+  }
 }

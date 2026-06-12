@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
 import { Repository } from 'typeorm';
 import { CarritoItem } from './carrito-item.entity';
 import { Producto } from '../productos/producto.entity';
 import { Usuario } from '../usuarios/usuario.entity';
-import { VentasService } from '../ventas/ventas.service';
 
 @Injectable()
 export class CarritoService {
@@ -15,7 +15,7 @@ export class CarritoService {
     private readonly productoRepository: Repository<Producto>,
     @InjectRepository(Usuario)
     private readonly usuarioRepository: Repository<Usuario>,
-    private readonly ventasService: VentasService,
+    private readonly configService: ConfigService,
   ) {}
 
     getCarrito(usuarioId: number) {
@@ -96,16 +96,25 @@ export class CarritoService {
         const usuario = await this.usuarioRepository.findOne({ where: { id: usuarioId } });
         const clienteNombre = usuario?.nombre ?? `Cliente #${usuarioId}`;
 
-        const itemsDto = items.map(item => ({
-            productoId: item.producto.id,
-            cantidad: item.cantidad,
-            precio: Number(item.producto.precio),
-        }));
+        const total = items.reduce(
+            (sum, item) => sum + Number(item.producto.precio) * item.cantidad,
+            0,
+        );
 
-        const result = await this.ventasService.crearDesdeCarrito(clienteNombre, itemsDto);
+        const lineas = items.map(
+            item => `- ${item.producto.nombre} x${item.cantidad} ($${Number(item.producto.precio).toLocaleString('es-CO')})`
+        );
+
+        const mensaje =
+            `Hola! Soy ${clienteNombre} y quiero hacer el siguiente pedido:\n\n` +
+            lineas.join('\n') +
+            `\n\nTotal: $${total.toLocaleString('es-CO')}`;
+
+        const numero = this.configService.get<string>('WHATSAPP_NUMBER');
+        const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
 
         await this.carritoRepository.delete({ usuario: { id: usuarioId } });
 
-        return { numero: result.numero, total: result.total, cantidadItems: items.length };
+        return { whatsappUrl: url, total, cantidadItems: items.length };
     }
 }
