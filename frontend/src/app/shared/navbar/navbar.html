@@ -17,23 +17,25 @@
 
     <!-- Acciones derecha -->
     <div class="navbar-actions">
-      @if (authService.estaLogueado()) {
-        <a routerLink="/carrito" class="nav-action-btn">
-          <span class="action-icon">🛒</span>
-          <span>Carrito</span>
-        </a>
-        @if (authService.getRol() === 'admin') {
-          <a routerLink="/admin" class="nav-action-btn admin-btn">
-            <span>Admin</span>
-          </a>
+
+      <!-- Carrito: visible siempre, sin necesidad de login -->
+      <a routerLink="/carrito" class="nav-action-btn carrito-btn">
+        <span class="action-icon">🛒</span>
+        <span>Carrito</span>
+        @if (carritoService.cantidadTotal() > 0) {
+          <span class="carrito-badge">{{ carritoService.cantidadTotal() }}</span>
         }
-        <button class="nav-action-btn logout-btn" (click)="authService.logout()">
-          Salir
-        </button>
+      </a>
+
+      @if (authService.estaLogueado()) {
+        @if (authService.getRol() === 'admin') {
+          <a routerLink="/admin" class="nav-action-btn admin-btn">Admin</a>
+        }
+        <button class="nav-action-btn logout-btn" (click)="authService.logout()">Salir</button>
       } @else {
-        <a routerLink="/register" class="nav-action-btn">Crear cuenta</a>
         <a routerLink="/login" class="nav-login-btn">Iniciar Sesión</a>
       }
+
     </div>
 
   </div>

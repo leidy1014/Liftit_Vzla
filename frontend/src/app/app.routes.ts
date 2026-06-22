@@ -16,7 +16,7 @@ export const routes: Routes = [
   { path: 'productos/:id', component: ProductoDetalle },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
-  { path: 'carrito', component: Carrito, canActivate: [authGuard] },
+  { path: 'carrito', component: Carrito },
   {
     path: 'admin',
     component: AdminLayout,

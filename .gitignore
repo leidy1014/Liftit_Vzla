@@ -8,8 +8,7 @@ node_modules/
 .env.production
 
 # Builds generados
-dist/
-**/dist/
+frontend/dist/
 
 # Imágenes subidas por usuarios (van en Cloudinary en producción)
 backend/uploads/*

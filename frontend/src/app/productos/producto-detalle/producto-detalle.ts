@@ -3,7 +3,6 @@ import { CurrencyPipe } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { ProductosService } from '../productos';
 import { CarritoService } from '../../carrito/carrito.service';
-import { AuthService } from '../../auth/auth';
 import { Navbar } from '../../shared/navbar/navbar';
 import { ToastService } from '../../shared/toast/toast.service';
 import { Producto } from '../producto.interface';
@@ -35,7 +34,6 @@ export class ProductoDetalle implements OnInit {
         private router: Router,
         private productosService: ProductosService,
         private carritoService: CarritoService,
-        private authService: AuthService,
         private toast: ToastService,
     ) {}
 
@@ -60,19 +58,9 @@ export class ProductoDetalle implements OnInit {
 
     agregarAlCarrito() {
         const p = this.producto();
-        if (!p) return;
-        if (!this.authService.getToken()) {
-            this.router.navigate(['/login']);
-            return;
-        }
-        if (p.stock === 0) {
-            this.toast.error('Este producto está agotado');
-            return;
-        }
-        this.carritoService.agregarItem(p.id, this.cantidad()).subscribe({
-            next: () => this.toast.exito(`✿ ${this.cantidad()} unidad(es) agregada(s) al carrito`),
-            error: (err) => this.toast.error(err.error?.message || 'No se pudo agregar al carrito'),
-        });
+        if (!p || p.stock === 0) return;
+        this.carritoService.agregar(p, this.cantidad());
+        this.toast.exito(`${this.cantidad()} unidad(es) agregada(s) al carrito`);
     }
 
     pedirPorWhatsapp() {
@@ -80,7 +68,7 @@ export class ProductoDetalle implements OnInit {
         if (!p) return;
         const precio = (p.precio * this.cantidad()).toLocaleString('es-CO');
         const msg = `Hola! Deseo realizar este pedido\n\n*${p.nombre}*\nCantidad: ${this.cantidad()}\nPrecio: $${precio}\n\n¿Está disponible?`;
-        window.open(`https://wa.me/573189605857?text=${encodeURIComponent(msg)}`, '_blank');
+        window.open(`https://wa.me/573213324759?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     getImagenUrl(imagen: string): string {

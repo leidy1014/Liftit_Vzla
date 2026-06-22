@@ -132,6 +132,27 @@
   color: #CCCCCC;
 }
 
+.carrito-btn {
+  position: relative;
+}
+
+.carrito-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--cg-magenta);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
 .nav-login-btn {
   background: var(--cg-magenta);
   color: white;

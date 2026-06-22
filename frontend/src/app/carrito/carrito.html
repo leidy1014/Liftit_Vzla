@@ -1,21 +1,15 @@
 <app-navbar />
 
-<!-- ══ PEDIDO CONFIRMADO ══ -->
-@if (pedidoConfirmado()) {
+<!-- ══ PEDIDO ENVIADO ══ -->
+@if (pedidoEnviado()) {
   <div class="carrito-page">
     <div class="pedido-exito">
-      <div class="pedido-exito-icono">🛍️</div>
-      <h2 class="pedido-exito-titulo">¡Pedido creado!</h2>
-      <p class="pedido-exito-numero">Número: <strong>{{ pedidoConfirmado()!.numero }}</strong></p>
-      <p class="pedido-exito-total">Total: <strong>{{ pedidoConfirmado()!.total | currency:'COP':'$':'1.0-0' }}</strong></p>
+      <div class="pedido-exito-icono">✅</div>
+      <h2 class="pedido-exito-titulo">¡Pedido enviado!</h2>
+      <p class="pedido-exito-desc">Se abrió WhatsApp con el resumen de tu pedido. Si no se abrió automáticamente:</p>
 
-      <div class="pedido-exito-pasos">
-        <p>Se abrió WhatsApp con el resumen de tu pedido.</p>
-        <p>Si no se abrió automáticamente, haz clic aquí:</p>
-      </div>
-
-      <a [href]="pedidoConfirmado()!.whatsappUrl" target="_blank" class="btn-whatsapp">
-        💬 Confirmar por WhatsApp
+      <a [href]="whatsappUrl()" target="_blank" class="btn-whatsapp">
+        💬 Abrir WhatsApp
       </a>
 
       <a routerLink="/productos" class="btn-seguir-comprando">
@@ -25,109 +19,90 @@
   </div>
 }
 
-@if (!pedidoConfirmado()) {
-<div class="carrito-page">
-  <div class="carrito-header">
-    <h1 class="page-title">Mi Carrito</h1>
-    <p class="page-subtitle">Revisa tus productos antes de pedir</p>
-  </div>
+<!-- ══ CARRITO ══ -->
+@if (!pedidoEnviado()) {
+  <div class="carrito-page">
+    <div class="carrito-header">
+      <h1 class="page-title">Mi Carrito</h1>
+      <p class="page-subtitle">Revisa tus productos antes de pedir</p>
+    </div>
 
-  <div class="carrito-contenido">
+    <div class="carrito-contenido">
 
-    <!-- Lista de items -->
-    <div class="carrito-items">
+      <!-- Lista de items -->
+      <div class="carrito-items">
 
-      @if (cargando()) {
-        <div class="loading-state">
-          <p>Cargando tu carrito...</p>
-        </div>
-      }
+        @if (items().length === 0) {
+          <div class="empty-carrito">
+            <span class="empty-icon">🛒</span>
+            <h3>Tu carrito está vacío</h3>
+            <p>Explora nuestros productos y agrega lo que te guste</p>
+            <a routerLink="/productos" class="cg-btn-primary">Ver catálogo</a>
+          </div>
+        }
 
-      @if (!cargando() && items().length === 0) {
-        <div class="empty-carrito">
-          <span class="empty-icon">🛒</span>
-          <h3>Tu carrito está vacío</h3>
-          <p>Explora nuestros productos y agrega lo que te guste</p>
-          <a routerLink="/productos" class="cg-btn-primary">Ver catálogo</a>
-        </div>
-      }
+        @for (item of items(); track item.productoId) {
+          <div class="carrito-item">
+            <div class="item-imagen">
+              @if (item.imagen) {
+                <img [src]="imagenUrl(item.imagen)" [alt]="item.nombre" class="item-img" />
+              } @else {
+                <span class="item-placeholder">✿</span>
+              }
+            </div>
 
-      @for (item of items(); track item.id) {
-        <div class="carrito-item">
-          <div class="item-imagen">
-            @if (item.producto.imagen) {
-              <img [src]="imagenUrl(item.producto.imagen)" [alt]="item.producto.nombre" class="item-img" />
-            } @else {
-              <span>✿</span>
+            <div class="item-info">
+              <h4 class="item-nombre">{{ item.nombre }}</h4>
+              <p class="item-precio-unit">{{ item.precio | currency:'COP':'symbol':'1.0-0' }} c/u</p>
+            </div>
+
+            <div class="item-cantidad-ctrl">
+              <span class="cantidad-label">Cantidad</span>
+              <div class="cantidad-controles">
+                <button class="btn-cantidad" (click)="disminuir(item)" [disabled]="item.cantidad <= 1">−</button>
+                <span class="cantidad-numero">{{ item.cantidad }}</span>
+                <button class="btn-cantidad" (click)="aumentar(item)" [disabled]="item.cantidad >= item.stock">+</button>
+              </div>
+            </div>
+
+            <div class="item-subtotal">
+              <span class="subtotal-label">Subtotal</span>
+              <span class="subtotal-valor">{{ item.cantidad * item.precio | currency:'COP':'symbol':'1.0-0' }}</span>
+            </div>
+
+            <button class="btn-eliminar" (click)="eliminar(item.productoId)" title="Eliminar">🗑</button>
+          </div>
+        }
+      </div>
+
+      <!-- Resumen -->
+      @if (items().length > 0) {
+        <div class="orden-resumen">
+          <h3 class="resumen-title">Resumen del pedido</h3>
+
+          <div class="resumen-lineas">
+            @for (item of items(); track item.productoId) {
+              <div class="resumen-linea">
+                <span>{{ item.nombre }} x{{ item.cantidad }}</span>
+                <span>{{ item.cantidad * item.precio | currency:'COP':'symbol':'1.0-0' }}</span>
+              </div>
             }
           </div>
 
-          <div class="item-info">
-            <h4 class="item-nombre">{{ item.producto.nombre }}</h4>
-            <p class="item-precio-unit">{{ item.producto.precio | currency:'COP':'symbol':'1.0-0' }} c/u</p>
+          <div class="resumen-total">
+            <span>Total</span>
+            <span class="total-valor">{{ calcularTotal() | currency:'COP':'symbol':'1.0-0' }}</span>
           </div>
 
-          <!-- Controles de cantidad -->
-          <div class="item-cantidad-ctrl">
-            <span class="cantidad-label">Cantidad</span>
-            <div class="cantidad-controles">
-              <button
-                class="btn-cantidad"
-                (click)="disminuir(item)"
-                [disabled]="item.cantidad <= 1">−</button>
-              <span class="cantidad-numero">{{ item.cantidad }}</span>
-              <button
-                class="btn-cantidad"
-                (click)="aumentar(item)">+</button>
-            </div>
-          </div>
-
-          <div class="item-subtotal">
-            <span class="subtotal-label">Subtotal</span>
-            <span class="subtotal-valor">{{ item.cantidad * item.producto.precio | currency:'COP':'symbol':'1.0-0' }}</span>
-          </div>
-
-          <button class="btn-eliminar" (click)="eliminar(item.id)" title="Eliminar producto">
-            🗑
+          <button class="btn-checkout" (click)="confirmarPedido()">
+            <span>Confirmar pedido</span>
+            <span>💬</span>
           </button>
+
+          <a routerLink="/productos" class="btn-seguir">← Seguir comprando</a>
         </div>
       }
+
     </div>
-
-    <!-- Resumen del pedido -->
-    @if (items().length > 0) {
-      <div class="orden-resumen">
-        <h3 class="resumen-title">Resumen del pedido</h3>
-
-        <div class="resumen-lineas">
-          @for (item of items(); track item.id) {
-            <div class="resumen-linea">
-              <span>{{ item.producto.nombre }} x{{ item.cantidad }}</span>
-              <span>{{ item.cantidad * item.producto.precio | currency:'COP':'symbol':'1.0-0' }}</span>
-            </div>
-          }
-        </div>
-
-        <div class="resumen-total">
-          <span>Total</span>
-          <span class="total-valor">{{ calcularTotal() | currency:'COP':'symbol':'1.0-0' }}</span>
-        </div>
-
-        <button class="btn-checkout" (click)="confirmarPedido()" [disabled]="procesando()">
-          @if (procesando()) {
-            <span>Procesando...</span>
-          } @else {
-            <span>Confirmar pedido</span>
-            <span class="whatsapp-icon">🛍️</span>
-          }
-        </button>
-
-        <a routerLink="/productos" class="btn-seguir">
-          ← Seguir comprando
-        </a>
-      </div>
-    }
-
   </div>
-</div>
 }

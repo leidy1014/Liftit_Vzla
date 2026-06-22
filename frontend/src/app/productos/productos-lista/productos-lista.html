@@ -1,58 +1,63 @@
 <app-navbar />
 
-<!-- Hero banner -->
-<div class="hero-banner">
-  <div class="hero-content">
-    <p class="hero-subtitle">Equipamiento Deportivo</p>
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-body">
+    <p class="hero-eyebrow">Equipamiento Deportivo</p>
     <h1 class="hero-title">ENTRENA<br><em>MÁS DURO</em></h1>
     <p class="hero-desc">Todo el equipamiento que necesitas para entrenar en serio. Calidad profesional, precios directos al gimnasio.</p>
-    <a routerLink="/carrito" class="cg-btn-primary">Ver mi carrito</a>
+    <a routerLink="/productos" fragment="catalogo" class="hero-cta">VER CATÁLOGO →</a>
   </div>
-  <div class="hero-decoration">
-    <div class="hero-logo-container">
-      <img src="/logo.png.jpeg" alt="Liftit Fitness" class="hero-logo" />
+</section>
+
+<!-- ══ CATEGORÍAS (solo si hay productos con categoría) ══ -->
+@if (categorias().length > 0) {
+  <section class="categorias-section">
+    <div class="categorias-inner">
+      <div class="categorias-header">
+        <h2 class="categorias-title">CATEGORÍAS</h2>
+        <p class="categorias-sub">ENCUENTRA LO QUE NECESITAS</p>
+      </div>
+      <div class="categorias-grid">
+        @for (cat of categorias(); track cat.id) {
+          <button
+            class="cat-card"
+            [class.activa]="categoriaActiva() === cat.nombre"
+            (click)="categoriaActiva.set(categoriaActiva() === cat.nombre ? null : cat.nombre)">
+            <span class="cat-icono">{{ getIcono(cat.nombre) }}</span>
+            <span class="cat-nombre">{{ cat.nombre }}</span>
+          </button>
+        }
+        @if (categoriaActiva() !== null) {
+          <button class="cat-card cat-ver-todo" (click)="categoriaActiva.set(null)">
+            <span class="cat-icono">✕</span>
+            <span class="cat-nombre">Ver todo</span>
+          </button>
+        }
+      </div>
     </div>
-  </div>
-</div>
+  </section>
+}
 
-<!-- Catálogo -->
-<div class="catalogo-section">
-  <div class="section-header">
-    <h2 class="section-title">Nuestros Productos</h2>
-    <p class="section-subtitle">Rendimiento garantizado</p>
-  </div>
-
-  <!-- Barra de búsqueda -->
-  <div class="busqueda-row">
-    <div class="busqueda-input-wrap">
+<!-- ══ CATÁLOGO ══ -->
+<section class="catalogo-section" id="catalogo">
+  <div class="catalogo-header">
+    <div>
+      <h2 class="section-title">PRODUCTOS DESTACADOS</h2>
+      <p class="section-sub">Calidad profesional para tu entrenamiento</p>
+    </div>
+    <!-- Búsqueda -->
+    <div class="busqueda-wrap">
       <span class="busqueda-icon">🔍</span>
       <input
         class="busqueda-input"
         type="text"
         placeholder="Buscar producto..."
         [value]="busqueda()"
-        (input)="busqueda.set($any($event.target).value)"
-      />
+        (input)="busqueda.set($any($event.target).value)" />
     </div>
   </div>
-
-  <!-- Filtros de categoría -->
-  @if (categorias().length > 0) {
-    <div class="filtros-categoria">
-      <button
-        [class]="'filtro-chip' + (categoriaActiva() === null ? ' activo' : '')"
-        (click)="categoriaActiva.set(null)">
-        Todos
-      </button>
-      @for (cat of categorias(); track cat.id) {
-        <button
-          [class]="'filtro-chip' + (categoriaActiva() === cat.nombre ? ' activo' : '')"
-          (click)="categoriaActiva.set(cat.nombre)">
-          {{ cat.nombre }}
-        </button>
-      }
-    </div>
-  }
 
   <!-- Grid de productos -->
   <div class="productos-grid">
@@ -63,15 +68,12 @@
           @if (producto.imagen) {
             <img [src]="imagenUrl(producto.imagen)" [alt]="producto.nombre" class="producto-img" />
           } @else {
-            <div class="imagen-placeholder">
-              <span class="imagen-icon">✿</span>
-            </div>
-          }
-          @if (producto.stock <= 5 && producto.stock > 0) {
-            <span class="badge-stock-bajo">¡Últimas unidades!</span>
+            <div class="imagen-placeholder"><span class="imagen-icon">🏋️</span></div>
           }
           @if (producto.stock === 0) {
-            <span class="badge-agotado">Agotado</span>
+            <span class="badge badge-agotado">Agotado</span>
+          } @else if (producto.stock <= 5) {
+            <span class="badge badge-pocas">¡Últimas unidades!</span>
           }
         </div>
 
@@ -80,16 +82,10 @@
             <span class="producto-categoria">{{ producto.categoria.nombre }}</span>
           }
           <h3 class="producto-nombre">{{ producto.nombre }}</h3>
-          @if (producto.descripcion) {
-            <p class="producto-descripcion">{{ producto.descripcion }}</p>
-          }
           <div class="producto-footer">
             <span class="producto-precio">{{ producto.precio | currency:'COP':'symbol':'1.0-0' }}</span>
-            <button
-              class="btn-agregar"
-              (click)="agregarAlCarrito(producto, $event)"
-              [disabled]="producto.stock === 0">
-              {{ producto.stock === 0 ? 'Agotado' : 'Agregar' }}
+            <button class="btn-agregar" (click)="agregarAlCarrito(producto, $event)" [disabled]="producto.stock === 0">
+              {{ producto.stock === 0 ? 'Agotado' : 'Agregar' }} 🛒
             </button>
           </div>
         </div>
@@ -101,24 +97,72 @@
   @if (productosFiltrados().length === 0 && productos().length > 0) {
     <div class="empty-state">
       <span class="empty-icon">🔍</span>
-      <p>No hay productos que coincidan con tu búsqueda.</p>
-      <button class="cg-btn-outline" (click)="busqueda.set(''); categoriaActiva.set(null)">Ver todos</button>
+      <p>No hay productos que coincidan.</p>
+      <button class="btn-reset" (click)="busqueda.set(''); categoriaActiva.set(null)">Ver todos</button>
     </div>
   }
+</section>
 
-  @if (productos().length === 0) {
-    <div class="empty-state">
-      <span class="empty-icon">✿</span>
-      <p>Cargando productos...</p>
+<!-- ══ BENEFICIOS ══ -->
+<section class="beneficios-section">
+  <div class="beneficios-inner">
+    <div class="beneficio">
+      <span class="beneficio-icono">🚚</span>
+      <div>
+        <strong>Envíos a todo el país</strong>
+        <p>Rápidos y seguros</p>
+      </div>
     </div>
-  }
-</div>
-
-<!-- Footer simple -->
-<footer class="site-footer">
-  <div class="footer-brand">
-    <img src="/logo.png.jpeg" alt="Liftit Fitness" class="footer-logo" />
-    <span class="footer-name">LIFTIT FITNESS</span>
+    <div class="beneficio">
+      <span class="beneficio-icono">🎯</span>
+      <div>
+        <strong>Calidad garantizada</strong>
+        <p>Equipos profesionales</p>
+      </div>
+    </div>
+    <div class="beneficio">
+      <span class="beneficio-icono">🔒</span>
+      <div>
+        <strong>Compra 100% segura</strong>
+        <p>Protegemos tus datos</p>
+      </div>
+    </div>
+    <div class="beneficio">
+      <span class="beneficio-icono">💬</span>
+      <div>
+        <strong>Atención personalizada</strong>
+        <p>Estamos para ayudarte</p>
+      </div>
+    </div>
   </div>
-  <p class="footer-tagline">Entrena duro. Rinde más.</p>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand-col">
+      <div class="footer-brand">
+        <img src="/logo.png.jpeg" alt="Liftit Fitness" class="footer-logo" />
+        <span class="footer-name">LIFTIT FITNESS</span>
+      </div>
+      <p class="footer-desc">Equipamiento profesional para entrenamiento de fuerza, cardio y funcional. Calidad que rinde más.</p>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-col-title">Catálogo</h4>
+      <a routerLink="/productos" class="footer-link">Todos los productos</a>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-col-title">Ayuda</h4>
+      <span class="footer-link">Preguntas frecuentes</span>
+      <span class="footer-link">Envíos y entregas</span>
+    </div>
+    <div class="footer-col">
+      <h4 class="footer-col-title">Contacto</h4>
+      <span class="footer-link">WhatsApp: 300 123 4567</span>
+      <span class="footer-link">Bogotá, Colombia</span>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 LIFTIT FITNESS. Todos los derechos reservados.</p>
+  </div>
 </footer>
