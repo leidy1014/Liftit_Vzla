@@ -72,7 +72,7 @@ __decorate([
     (0, common_1.Post)('upload'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('imagen', {
         storage: (0, multer_1.diskStorage)({
-            destination: './uploads',
+            destination: (0, path_1.join)(__dirname, '..', '..', 'uploads'),
             filename: (req, file, cb) => {
                 const nombre = `${Date.now()}-${Math.round(Math.random() * 1e9)}${(0, path_1.extname)(file.originalname)}`;
                 cb(null, nombre);
@@ -125,7 +125,7 @@ __decorate([
     (0, common_1.Post)(':id/imagenes'),
     (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('imagen', {
         storage: (0, multer_1.diskStorage)({
-            destination: './uploads',
+            destination: (0, path_1.join)(__dirname, '..', '..', 'uploads'),
             filename: (req, file, cb) => {
                 const nombre = `${Date.now()}-${Math.round(Math.random() * 1e9)}${(0, path_1.extname)(file.originalname)}`;
                 cb(null, nombre);

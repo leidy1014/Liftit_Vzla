@@ -1,9 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { mkdirSync } from 'fs';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  mkdirSync(join(__dirname, '..', 'uploads'), { recursive: true });
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({ origin: true, credentials: true });
   app.setGlobalPrefix('api');

@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Patch, Delete, Param, Body, ParseIntPipe, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, join } from 'path';
 import { ProductosService } from './productos.service';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { JwtGuard } from '../auth/jwt.guard';
@@ -27,7 +27,7 @@ export class ProductosController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('imagen', {
     storage: diskStorage({
-      destination: './uploads',
+      destination: join(__dirname, '..', '..', 'uploads'),
       filename: (req, file, cb) => {
         const nombre = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
         cb(null, nombre);
@@ -71,7 +71,7 @@ export class ProductosController {
   @Post(':id/imagenes')
   @UseInterceptors(FileInterceptor('imagen', {
     storage: diskStorage({
-      destination: './uploads',
+      destination: join(__dirname, '..', '..', 'uploads'),
       filename: (req, file, cb) => {
         const nombre = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
         cb(null, nombre);
