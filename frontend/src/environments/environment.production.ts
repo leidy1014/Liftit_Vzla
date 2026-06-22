@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.liftitfitnesscol.com',
+  apiUrl: 'https://liftitfitnesscol.com/api',
 };
