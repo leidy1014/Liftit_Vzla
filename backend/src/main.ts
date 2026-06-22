@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.enableCors({ origin: true, credentials: true });
   app.setGlobalPrefix('api');
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), { prefix: '/uploads/' });
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), { prefix: '/api/uploads/' });
   app.useStaticAssets(join(__dirname, '..', 'public'));
 
   // SPA fallback: serve index.html for all non-API routes

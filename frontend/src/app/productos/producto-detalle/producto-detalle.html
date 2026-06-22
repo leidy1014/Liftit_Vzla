@@ -100,7 +100,6 @@
                 <span class="cant-valor">{{ cantidad() }}</span>
                 <button class="cant-btn" (click)="aumentarCantidad()" [disabled]="cantidad() >= producto()!.stock">+</button>
               </div>
-              <span class="stock-disponible">{{ producto()!.stock }} disponibles</span>
             </div>
           }
 
