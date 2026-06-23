@@ -5,9 +5,9 @@ export declare class ProductosController {
     constructor(productosService: ProductosService);
     findAll(): Promise<import("./producto.entity").Producto[]>;
     findOne(id: number): Promise<import("./producto.entity").Producto>;
-    uploadImagen(file: Express.Multer.File): {
+    uploadImagen(file: Express.Multer.File): Promise<{
         filename: string;
-    };
+    }>;
     create(dto: CreateProductoDto): Promise<import("./producto.entity").Producto>;
     update(id: number, dto: Partial<CreateProductoDto>): Promise<import("./producto.entity").Producto>;
     remove(id: number): Promise<void>;

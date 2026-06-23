@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
   apiUrl: 'https://liftitfitnesscol.com/api',
-  uploadsUrl: 'https://liftitfitnesscol.com/uploads',
+  uploadsUrl: 'https://qpytbgwvwjrcipjsdrms.supabase.co/storage/v1/object/public/imagenes',
 };

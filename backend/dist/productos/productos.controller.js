@@ -17,11 +17,35 @@ const common_1 = require("@nestjs/common");
 const platform_express_1 = require("@nestjs/platform-express");
 const multer_1 = require("multer");
 const path_1 = require("path");
+const supabase_js_1 = require("@supabase/supabase-js");
 const productos_service_1 = require("./productos.service");
 const create_producto_dto_1 = require("./dto/create-producto.dto");
 const jwt_guard_1 = require("../auth/jwt.guard");
 const roles_decorator_1 = require("../auth/roles.decorator");
 const roles_guard_1 = require("../auth/roles.guard");
+const FILTRO_IMAGEN = (req, file, cb) => {
+    if (!file.mimetype.match(/image\/(jpg|jpeg|png|webp|gif)/)) {
+        return cb(new common_1.BadRequestException('Solo se permiten imágenes (jpg, png, webp)'), false);
+    }
+    cb(null, true);
+};
+const OPCIONES_MULTER = {
+    storage: (0, multer_1.memoryStorage)(),
+    fileFilter: FILTRO_IMAGEN,
+    limits: { fileSize: 5 * 1024 * 1024 },
+};
+function supabaseClient() {
+    return (0, supabase_js_1.createClient)(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+}
+async function subirAStorage(file) {
+    const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${(0, path_1.extname)(file.originalname)}`;
+    const { error } = await supabaseClient().storage
+        .from('imagenes')
+        .upload(filename, file.buffer, { contentType: file.mimetype, upsert: false });
+    if (error)
+        throw new common_1.BadRequestException('Error al subir la imagen: ' + error.message);
+    return filename;
+}
 let ProductosController = class ProductosController {
     productosService;
     constructor(productosService) {
@@ -33,8 +57,9 @@ let ProductosController = class ProductosController {
     findOne(id) {
         return this.productosService.findOne(id);
     }
-    uploadImagen(file) {
-        return { filename: file.filename };
+    async uploadImagen(file) {
+        const filename = await subirAStorage(file);
+        return { filename };
     }
     create(dto) {
         return this.productosService.create(dto);
@@ -45,8 +70,9 @@ let ProductosController = class ProductosController {
     remove(id) {
         return this.productosService.remove(id);
     }
-    agregarImagen(id, file) {
-        return this.productosService.agregarImagen(id, file.filename);
+    async agregarImagen(id, file) {
+        const filename = await subirAStorage(file);
+        return this.productosService.agregarImagen(id, filename);
     }
     eliminarImagen(id, filename) {
         return this.productosService.eliminarImagen(id, filename);
@@ -70,26 +96,11 @@ __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('admin'),
     (0, common_1.Post)('upload'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('imagen', {
-        storage: (0, multer_1.diskStorage)({
-            destination: (0, path_1.join)(__dirname, '..', '..', 'uploads'),
-            filename: (req, file, cb) => {
-                const nombre = `${Date.now()}-${Math.round(Math.random() * 1e9)}${(0, path_1.extname)(file.originalname)}`;
-                cb(null, nombre);
-            },
-        }),
-        fileFilter: (req, file, cb) => {
-            if (!file.mimetype.match(/image\/(jpg|jpeg|png|webp|gif)/)) {
-                return cb(new common_1.BadRequestException('Solo se permiten imágenes (jpg, png, webp)'), false);
-            }
-            cb(null, true);
-        },
-        limits: { fileSize: 5 * 1024 * 1024 },
-    })),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('imagen', OPCIONES_MULTER)),
     __param(0, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ProductosController.prototype, "uploadImagen", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, roles_guard_1.RolesGuard),
@@ -123,27 +134,12 @@ __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('admin'),
     (0, common_1.Post)(':id/imagenes'),
-    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('imagen', {
-        storage: (0, multer_1.diskStorage)({
-            destination: (0, path_1.join)(__dirname, '..', '..', 'uploads'),
-            filename: (req, file, cb) => {
-                const nombre = `${Date.now()}-${Math.round(Math.random() * 1e9)}${(0, path_1.extname)(file.originalname)}`;
-                cb(null, nombre);
-            },
-        }),
-        fileFilter: (req, file, cb) => {
-            if (!file.mimetype.match(/image\/(jpg|jpeg|png|webp|gif)/)) {
-                return cb(new common_1.BadRequestException('Solo se permiten imágenes (jpg, png, webp)'), false);
-            }
-            cb(null, true);
-        },
-        limits: { fileSize: 5 * 1024 * 1024 },
-    })),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('imagen', OPCIONES_MULTER)),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __param(1, (0, common_1.UploadedFile)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ProductosController.prototype, "agregarImagen", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, roles_guard_1.RolesGuard),
