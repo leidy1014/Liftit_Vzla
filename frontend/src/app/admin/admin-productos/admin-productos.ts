@@ -92,7 +92,7 @@ export class AdminProductos implements OnInit {
       categoriaId: producto.categoria?.id ?? null,
     });
     this.imagenFile.set(null);
-    this.imagenPreview.set(producto.imagen ? `${environment.apiUrl}/uploads/${producto.imagen}` : null);
+    this.imagenPreview.set(producto.imagen ? `${environment.uploadsUrl}/${producto.imagen}` : null);
     this.mostrarFormulario.set(true);
   }
 
@@ -167,7 +167,7 @@ export class AdminProductos implements OnInit {
   }
 
   getImagenUrl(imagen: string): string {
-    return `${environment.apiUrl}/uploads/${imagen}`;
+    return `${environment.uploadsUrl}/${imagen}`;
   }
 
   getMargen(producto: Producto): number {

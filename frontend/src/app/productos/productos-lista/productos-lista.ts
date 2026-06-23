@@ -89,7 +89,7 @@ export class ProductosLista implements OnInit {
   }
 
   imagenUrl(imagen: string): string {
-    return `${environment.apiUrl}/uploads/${imagen}`;
+    return `${environment.uploadsUrl}/${imagen}`;
   }
 
   irADetalle(id: number) {

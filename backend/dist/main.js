@@ -9,7 +9,7 @@ async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors({ origin: true, credentials: true });
     app.setGlobalPrefix('api');
-    app.useStaticAssets((0, path_1.join)(__dirname, '..', 'uploads'), { prefix: '/api/uploads/' });
+    app.useStaticAssets((0, path_1.join)(__dirname, '..', 'uploads'), { prefix: '/uploads/' });
     app.useStaticAssets((0, path_1.join)(__dirname, '..', 'public'));
     const server = app.getHttpAdapter().getInstance();
     server.get(/^(?!\/api|\/uploads).*/, (_req, res) => {

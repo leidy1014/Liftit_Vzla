@@ -72,6 +72,6 @@ export class ProductoDetalle implements OnInit {
     }
 
     getImagenUrl(imagen: string): string {
-        return `${environment.apiUrl}/uploads/${imagen}`;
+        return `${environment.uploadsUrl}/${imagen}`;
     }
 }

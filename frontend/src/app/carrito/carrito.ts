@@ -23,7 +23,7 @@ export class Carrito {
   whatsappUrl = signal('');
 
   imagenUrl(imagen: string): string {
-    return `${environment.apiUrl}/uploads/${imagen}`;
+    return `${environment.uploadsUrl}/${imagen}`;
   }
 
   calcularTotal(): number {
