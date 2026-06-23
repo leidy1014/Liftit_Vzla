@@ -11,7 +11,7 @@ export declare class CarritoService {
     constructor(carritoRepository: Repository<CarritoItem>, productoRepository: Repository<Producto>, usuarioRepository: Repository<Usuario>, configService: ConfigService);
     getCarrito(usuarioId: number): Promise<CarritoItem[]>;
     actualizarItem(id: number, cantidad: number): Promise<import("typeorm").UpdateResult>;
-    agregarItem(usuarioId: number, productoId: number, cantidad: number): Promise<CarritoItem | import("typeorm").UpdateResult>;
+    agregarItem(usuarioId: number, productoId: number, cantidad: number): Promise<import("typeorm").UpdateResult | CarritoItem>;
     eliminarItem(id: number): Promise<void>;
     checkout(usuarioId: number): Promise<{
         whatsappUrl: string;

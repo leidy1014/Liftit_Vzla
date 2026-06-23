@@ -3,7 +3,9 @@ export declare class Producto {
     id: number;
     nombre: string;
     descripcion: string;
+    orden: number;
     precio: number;
+    precioAnterior: number;
     stock: number;
     stockAverias: number;
     activo: boolean;

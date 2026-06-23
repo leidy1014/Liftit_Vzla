@@ -13,7 +13,16 @@ export class ProductosService {
   ) {}
 
   findAll(): Promise<Producto[]> {
-    return this.productoRepository.find({ relations: { categoria: true } });
+    return this.productoRepository.find({
+      relations: { categoria: true },
+      order: { orden: 'ASC', id: 'ASC' },
+    });
+  }
+
+  async reordenar(ids: number[]): Promise<void> {
+    await Promise.all(
+      ids.map((id, index) => this.productoRepository.update(id, { orden: index }))
+    );
   }
 
   async findOne(id: number): Promise<Producto> {

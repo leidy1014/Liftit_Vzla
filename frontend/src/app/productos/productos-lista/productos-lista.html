@@ -61,7 +61,7 @@
 
   <!-- Grid de productos -->
   <div class="productos-grid">
-    @for (producto of productosFiltrados(); track producto.id) {
+    @for (producto of productosPaginados(); track producto.id) {
       <div class="producto-card" (click)="irADetalle(producto.id)">
 
         <div class="producto-imagen">
@@ -82,6 +82,14 @@
             <span class="producto-categoria">{{ producto.categoria.nombre }}</span>
           }
           <h3 class="producto-nombre">{{ producto.nombre }}</h3>
+          @if ((producto.totalResenas ?? 0) > 0) {
+            <div class="producto-estrellas">
+              @for (s of estrellas(producto.calificacionPromedio ?? 0); track $index) {
+                <span class="estrella" [class.llena]="s === '★'">{{ s }}</span>
+              }
+              <span class="resenas-count">{{ producto.calificacionPromedio | number:'1.1-1' }} ({{ producto.totalResenas }})</span>
+            </div>
+          }
           <div class="producto-footer">
             <span class="producto-precio">{{ producto.precio | currency:'COP':'symbol':'1.0-0' }}</span>
             <button class="btn-agregar" (click)="agregarAlCarrito(producto, $event)" [disabled]="producto.stock === 0">
@@ -99,6 +107,14 @@
       <span class="empty-icon">🔍</span>
       <p>No hay productos que coincidan.</p>
       <button class="btn-reset" (click)="busqueda.set(''); categoriaActiva.set(null)">Ver todos</button>
+    </div>
+  }
+
+  @if (totalPaginas() > 1) {
+    <div class="paginacion">
+      <button class="pag-btn" (click)="paginaAnterior()" [disabled]="paginaActual() === 1">&#8249;</button>
+      <span class="pag-info">{{ paginaActual() }} de {{ totalPaginas() }}</span>
+      <button class="pag-btn" (click)="paginaSiguiente()" [disabled]="paginaActual() === totalPaginas()">&#8250;</button>
     </div>
   }
 </section>

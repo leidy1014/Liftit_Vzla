@@ -23,7 +23,13 @@ let ProductosService = class ProductosService {
         this.productoRepository = productoRepository;
     }
     findAll() {
-        return this.productoRepository.find({ relations: { categoria: true } });
+        return this.productoRepository.find({
+            relations: { categoria: true },
+            order: { orden: 'ASC', id: 'ASC' },
+        });
+    }
+    async reordenar(ids) {
+        await Promise.all(ids.map((id, index) => this.productoRepository.update(id, { orden: index })));
     }
     async findOne(id) {
         const producto = await this.productoRepository.findOne({

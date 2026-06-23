@@ -34,6 +34,10 @@ export class ProductosService {
     return this.http.post<{ filename: string }>(`${this.apiUrl}/upload`, formData);
   }
 
+  reordenar(ids: number[]): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/reordenar`, { ids });
+  }
+
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

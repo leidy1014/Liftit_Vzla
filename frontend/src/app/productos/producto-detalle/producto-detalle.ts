@@ -1,16 +1,20 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { ProductosService } from '../productos';
 import { CarritoService } from '../../carrito/carrito.service';
 import { Navbar } from '../../shared/navbar/navbar';
 import { ToastService } from '../../shared/toast/toast.service';
 import { Producto } from '../producto.interface';
+import { Resena } from '../../resenas/resena.interface';
+import { ResenasService } from '../../resenas/resenas.service';
+import { AuthService } from '../../auth/auth';
 import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-producto-detalle',
-    imports: [CurrencyPipe, RouterModule, Navbar],
+    imports: [CurrencyPipe, DatePipe, RouterModule, FormsModule, Navbar],
     templateUrl: './producto-detalle.html',
     styleUrl: './producto-detalle.css',
 })
@@ -22,6 +26,13 @@ export class ProductoDetalle implements OnInit {
     imagenActiva = signal<string | null>(null);
     readonly LIMITE_DESCRIPCION = 300;
 
+    resenas = signal<Resena[]>([]);
+    nuevaPuntuacion = signal(0);
+    nuevoComentario = signal('');
+    enviandoResena = signal(false);
+    yaReseno = signal(false);
+    estrellasHover = signal(0);
+
     get descripcionCorta(): string {
         const desc = this.producto()?.descripcion ?? '';
         return desc.length > this.LIMITE_DESCRIPCION
@@ -29,20 +40,75 @@ export class ProductoDetalle implements OnInit {
             : desc;
     }
 
+    get promedioResenas(): number {
+        const lista = this.resenas();
+        if (!lista.length) return 0;
+        return Math.round((lista.reduce((s, r) => s + r.puntuacion, 0) / lista.length) * 10) / 10;
+    }
+
     constructor(
         private route: ActivatedRoute,
         private router: Router,
         private productosService: ProductosService,
         private carritoService: CarritoService,
+        private resenasService: ResenasService,
+        public authService: AuthService,
         private toast: ToastService,
     ) {}
 
     ngOnInit() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
         this.productosService.getById(id).subscribe({
-            next: (p) => { this.producto.set(p); this.imagenActiva.set(p.imagen ?? null); this.cargando.set(false); },
+            next: (p) => {
+                this.producto.set(p);
+                this.imagenActiva.set(p.imagen ?? null);
+                this.cargando.set(false);
+                this.cargarResenas(id);
+            },
             error: () => { this.cargando.set(false); this.router.navigate(['/productos']); },
         });
+    }
+
+    cargarResenas(productoId: number) {
+        this.resenasService.getByProducto(productoId).subscribe(lista => {
+            this.resenas.set(lista);
+        });
+    }
+
+    estrellas(promedio: number): string[] {
+        return Array.from({ length: 5 }, (_, i) => i < Math.round(promedio) ? '★' : '☆');
+    }
+
+    estrellasSelector(n: number): string {
+        const hover = this.estrellasHover();
+        const sel = this.nuevaPuntuacion();
+        const activo = hover > 0 ? hover : sel;
+        return n <= activo ? '★' : '☆';
+    }
+
+    enviarResena() {
+        const p = this.producto();
+        if (!p || this.nuevaPuntuacion() === 0) {
+            this.toast.error('Selecciona una puntuación de 1 a 5 estrellas');
+            return;
+        }
+        this.enviandoResena.set(true);
+        this.resenasService.crear({
+            productoId: p.id,
+            puntuacion: this.nuevaPuntuacion(),
+            comentario: this.nuevoComentario() || undefined,
+        }).subscribe({
+            next: () => {
+                this.toast.exito('¡Gracias por tu reseña!');
+                this.yaReseno.set(true);
+                this.nuevaPuntuacion.set(0);
+                this.nuevoComentario.set('');
+                this.cargarResenas(p.id);
+            },
+            error: (err) => {
+                this.toast.error(err.error?.message || 'No se pudo enviar la reseña');
+            },
+        }).add(() => this.enviandoResena.set(false));
     }
 
     aumentarCantidad() {

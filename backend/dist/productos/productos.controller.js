@@ -64,6 +64,9 @@ let ProductosController = class ProductosController {
     create(dto) {
         return this.productosService.create(dto);
     }
+    reordenar(body) {
+        return this.productosService.reordenar(body.ids);
+    }
     update(id, dto) {
         return this.productosService.update(id, dto);
     }
@@ -111,6 +114,15 @@ __decorate([
     __metadata("design:paramtypes", [create_producto_dto_1.CreateProductoDto]),
     __metadata("design:returntype", void 0)
 ], ProductosController.prototype, "create", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('admin'),
+    (0, common_1.Patch)('reordenar'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ProductosController.prototype, "reordenar", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('admin'),

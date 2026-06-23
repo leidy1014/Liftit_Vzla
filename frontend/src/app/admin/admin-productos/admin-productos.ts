@@ -1,5 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,7 +18,7 @@ import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-admin-productos',
-  imports: [ReactiveFormsModule, MatTableModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, CdkTextareaAutosize],
+  imports: [DecimalPipe, DragDropModule, ReactiveFormsModule, MatTableModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, CdkTextareaAutosize],
   templateUrl: './admin-productos.html',
   styleUrl: './admin-productos.css',
 })
@@ -25,7 +27,7 @@ export class AdminProductos implements OnInit {
   productoEditando = signal<Producto | null>(null);
   categorias = signal<Categoria[]>([]);
   mostrarFormulario = signal(false);
-  columnas = ['imagen', 'nombre', 'precio', 'margen', 'stock', 'categoria', 'acciones'];
+  columnas = ['handle', 'imagen', 'nombre', 'precio', 'disponible', 'categoria', 'acciones'];
 
   imagenFile = signal<File | null>(null);
   imagenPreview = signal<string | null>(null);
@@ -43,12 +45,8 @@ export class AdminProductos implements OnInit {
       nombre: ['', Validators.required],
       descripcion: [''],
       precio: [0, [Validators.required, Validators.min(0)]],
-      costo: [0, Validators.min(0)],
-      stock: [0, Validators.min(0)],
-      stockMinimo: [5, Validators.min(0)],
-      referencia: [''],
-      marca: [''],
-      codigoBarras: [''],
+      precioAnterior: [null],
+      activo: [true],
       categoriaId: [null],
     });
   }
@@ -73,7 +71,7 @@ export class AdminProductos implements OnInit {
       this.productoEditando.set(null);
       this.imagenFile.set(null);
       this.imagenPreview.set(null);
-      this.form.reset({ precio: 0, stock: 0 });
+      this.form.reset({ precio: 0, precioAnterior: null, activo: true });
     }
   }
 
@@ -83,12 +81,8 @@ export class AdminProductos implements OnInit {
       nombre: producto.nombre,
       descripcion: producto.descripcion,
       precio: producto.precio,
-      costo: producto.costo ?? 0,
-      stock: producto.stock,
-      stockMinimo: producto.stockMinimo ?? 5,
-      referencia: producto.referencia ?? '',
-      marca: producto.marca ?? '',
-      codigoBarras: producto.codigoBarras ?? '',
+      precioAnterior: producto.precioAnterior ?? null,
+      activo: producto.activo,
       categoriaId: producto.categoria?.id ?? null,
     });
     this.imagenFile.set(null);
@@ -140,7 +134,7 @@ export class AdminProductos implements OnInit {
   }
 
   private resetFormulario() {
-    this.form.reset({ precio: 0, costo: 0, stock: 0, stockMinimo: 5 });
+    this.form.reset({ precio: 0, precioAnterior: null, activo: true });
     this.productoEditando.set(null);
     this.imagenFile.set(null);
     this.imagenPreview.set(null);
@@ -160,7 +154,7 @@ export class AdminProductos implements OnInit {
           this.cargarProductos();
         },
         error: (err) => {
-          this.toast.error(err.error?.message || 'No se pudo eliminar. Puede que el producto esté en uso en ventas o compras.');
+          this.toast.error(err.error?.message || 'No se pudo eliminar.');
         },
       });
     });
@@ -168,11 +162,6 @@ export class AdminProductos implements OnInit {
 
   getImagenUrl(imagen: string): string {
     return `${environment.uploadsUrl}/${imagen}`;
-  }
-
-  getMargen(producto: Producto): number {
-    if (!producto.costo || producto.costo === 0) return 0;
-    return Math.round(((producto.precio - producto.costo) / producto.precio) * 100);
   }
 
   onImagenExtraSelected(event: Event) {
@@ -189,6 +178,13 @@ export class AdminProductos implements OnInit {
       error: () => this.toast.error('Error al subir la imagen'),
     });
     input.value = '';
+  }
+
+  drop(event: CdkDragDrop<Producto[]>) {
+    const lista = [...this.productos()];
+    moveItemInArray(lista, event.previousIndex, event.currentIndex);
+    this.productos.set(lista);
+    this.productosService.reordenar(lista.map(p => p.id)).subscribe();
   }
 
   eliminarImagenExtra(filename: string) {

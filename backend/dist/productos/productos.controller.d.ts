@@ -9,6 +9,9 @@ export declare class ProductosController {
         filename: string;
     }>;
     create(dto: CreateProductoDto): Promise<import("./producto.entity").Producto>;
+    reordenar(body: {
+        ids: number[];
+    }): Promise<void>;
     update(id: number, dto: Partial<CreateProductoDto>): Promise<import("./producto.entity").Producto>;
     remove(id: number): Promise<void>;
     agregarImagen(id: number, file: Express.Multer.File): Promise<import("./producto.entity").Producto>;

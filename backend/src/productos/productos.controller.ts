@@ -67,6 +67,13 @@ export class ProductosController {
 
   @UseGuards(JwtGuard, RolesGuard)
   @Roles('admin')
+  @Patch('reordenar')
+  reordenar(@Body() body: { ids: number[] }) {
+    return this.productosService.reordenar(body.ids);
+  }
+
+  @UseGuards(JwtGuard, RolesGuard)
+  @Roles('admin')
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: Partial<CreateProductoDto>) {
     return this.productosService.update(id, dto);

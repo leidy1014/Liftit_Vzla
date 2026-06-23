@@ -5,6 +5,8 @@ class CreateProductoDto {
     nombre;
     descripcion;
     precio;
+    precioAnterior;
+    activo;
     costo;
     stock;
     stockMinimo;

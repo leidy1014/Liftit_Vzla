@@ -6,7 +6,7 @@ export declare class CarritoController {
     agregarItem(req: any, body: {
         productoId: number;
         cantidad: number;
-    }): Promise<import("./carrito-item.entity").CarritoItem | import("typeorm").UpdateResult>;
+    }): Promise<import("typeorm").UpdateResult | import("./carrito-item.entity").CarritoItem>;
     actualizarItem(id: number, body: {
         cantidad: number;
     }): Promise<import("typeorm").UpdateResult>;

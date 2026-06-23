@@ -18,6 +18,7 @@ const auth_module_1 = require("./auth/auth.module");
 const categorias_module_1 = require("./categorias/categorias.module");
 const carrito_module_1 = require("./carrito/carrito.module");
 const clientes_module_1 = require("./clientes/clientes.module");
+const resenas_module_1 = require("./resenas/resenas.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -45,6 +46,7 @@ exports.AppModule = AppModule = __decorate([
             categorias_module_1.CategoriasModule,
             carrito_module_1.CarritoModule,
             clientes_module_1.ClientesModule,
+            resenas_module_1.ResenasModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

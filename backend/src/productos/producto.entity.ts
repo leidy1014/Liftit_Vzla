@@ -12,8 +12,14 @@ export class Producto {
   @Column('text', { nullable: true })
   descripcion: string;
 
+  @Column({ default: 0 })
+  orden: number;
+
   @Column('decimal', { precision: 10, scale: 2 })
   precio: number;
+
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
+  precioAnterior: number;
 
   @Column({ default: 0 })
   stock: number;

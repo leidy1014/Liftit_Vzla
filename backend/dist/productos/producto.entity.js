@@ -16,7 +16,9 @@ let Producto = class Producto {
     id;
     nombre;
     descripcion;
+    orden;
     precio;
+    precioAnterior;
     stock;
     stockAverias;
     activo;
@@ -43,9 +45,17 @@ __decorate([
     __metadata("design:type", String)
 ], Producto.prototype, "descripcion", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], Producto.prototype, "orden", void 0);
+__decorate([
     (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2 }),
     __metadata("design:type", Number)
 ], Producto.prototype, "precio", void 0);
+__decorate([
+    (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2, nullable: true }),
+    __metadata("design:type", Number)
+], Producto.prototype, "precioAnterior", void 0);
 __decorate([
     (0, typeorm_1.Column)({ default: 0 }),
     __metadata("design:type", Number)
