@@ -368,6 +368,20 @@
   font-weight: 600;
 }
 
+.precios-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.precio-anterior {
+  font-size: 0.78rem;
+  color: #AAAAAA;
+  text-decoration: line-through;
+  font-family: var(--cg-font-heading);
+  font-weight: 600;
+}
+
 .producto-footer {
   display: flex;
   align-items: center;

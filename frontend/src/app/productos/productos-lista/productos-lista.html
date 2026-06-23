@@ -91,7 +91,12 @@
             </div>
           }
           <div class="producto-footer">
-            <span class="producto-precio">{{ producto.precio | currency:'COP':'symbol':'1.0-0' }}</span>
+            <div class="precios-wrap">
+              <span class="producto-precio">{{ producto.precio | currency:'COP':'symbol':'1.0-0' }}</span>
+              @if (producto.precioAnterior) {
+                <span class="precio-anterior">{{ producto.precioAnterior | currency:'COP':'symbol':'1.0-0' }}</span>
+              }
+            </div>
             <button class="btn-agregar" (click)="agregarAlCarrito(producto, $event)" [disabled]="producto.stock === 0">
               {{ producto.stock === 0 ? 'Agotado' : 'Agregar' }} 🛒
             </button>
