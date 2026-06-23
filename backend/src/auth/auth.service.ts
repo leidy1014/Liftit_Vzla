@@ -1,13 +1,18 @@
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsuariosService } from '../usuarios/usuarios.service';
+import { Cliente } from '../clientes/cliente.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usuariosService: UsuariosService,
     private readonly jwtService: JwtService,
+    @InjectRepository(Cliente)
+    private readonly clienteRepository: Repository<Cliente>,
   ) {}
 
   async register(nombre: string, email: string, password: string) {
@@ -16,6 +21,9 @@ export class AuthService {
 
     const hash = await bcrypt.hash(password, 10);
     const usuario = await this.usuariosService.create({ nombre, email, password: hash });
+
+    const cliente = this.clienteRepository.create({ nombre, email });
+    await this.clienteRepository.save(cliente);
 
     return { mensaje: 'Usuario creado correctamente', id: usuario.id };
   }

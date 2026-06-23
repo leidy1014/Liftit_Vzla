@@ -33,11 +33,8 @@
             } @else {
               <div class="detalle-imagen-placeholder"><span>✿</span></div>
             }
-            @if (producto()!.stock === 0) {
+            @if (!producto()!.activo) {
               <div class="detalle-agotado-overlay">Agotado</div>
-            }
-            @if (producto()!.stock > 0 && producto()!.stock <= 5) {
-              <div class="detalle-ultimas">¡Últimas {{ producto()!.stock }} unidades!</div>
             }
           </div>
 
@@ -101,13 +98,13 @@
           }
 
           <!-- Selector de cantidad -->
-          @if (producto()!.stock > 0) {
+          @if (producto()!.activo) {
             <div class="cantidad-row">
               <span class="cantidad-label">Cantidad</span>
               <div class="cantidad-control">
                 <button class="cant-btn" (click)="disminuirCantidad()" [disabled]="cantidad() <= 1">−</button>
                 <span class="cant-valor">{{ cantidad() }}</span>
-                <button class="cant-btn" (click)="aumentarCantidad()" [disabled]="cantidad() >= producto()!.stock">+</button>
+                <button class="cant-btn" (click)="aumentarCantidad()" [disabled]="cantidad() >= 99">+</button>
               </div>
             </div>
           }
@@ -117,15 +114,15 @@
             <button
               class="btn-agregar-detalle"
               (click)="agregarAlCarrito()"
-              [disabled]="producto()!.stock === 0">
-              🛒 {{ producto()!.stock === 0 ? 'Agotado' : 'Agregar al carrito' }}
+              [disabled]="!producto()!.activo">
+              🛒 {{ !producto()!.activo ? 'Agotado' : 'Agregar al carrito' }}
             </button>
             <button class="btn-whatsapp" (click)="pedirPorWhatsapp()">
               <span class="wa-icon">💬</span> Pedir por WhatsApp
             </button>
           </div>
 
-          @if (producto()!.stock === 0) {
+          @if (!producto()!.activo) {
             <p class="agotado-msg">Este producto está temporalmente agotado. Contáctanos por WhatsApp para consultar disponibilidad.</p>
           }
         </div>

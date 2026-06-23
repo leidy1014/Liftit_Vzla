@@ -112,8 +112,7 @@ export class ProductoDetalle implements OnInit {
     }
 
     aumentarCantidad() {
-        const p = this.producto();
-        if (!p || this.cantidad() >= p.stock) return;
+        if (this.cantidad() >= 99) return;
         this.cantidad.update(c => c + 1);
     }
 
@@ -124,7 +123,7 @@ export class ProductoDetalle implements OnInit {
 
     agregarAlCarrito() {
         const p = this.producto();
-        if (!p || p.stock === 0) return;
+        if (!p || !p.activo) return;
         this.carritoService.agregar(p, this.cantidad());
         this.toast.exito(`${this.cantidad()} unidad(es) agregada(s) al carrito`);
     }

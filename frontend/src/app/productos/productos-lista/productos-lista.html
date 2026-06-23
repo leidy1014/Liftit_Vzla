@@ -70,10 +70,8 @@
           } @else {
             <div class="imagen-placeholder"><span class="imagen-icon">🏋️</span></div>
           }
-          @if (producto.stock === 0) {
+          @if (!producto.activo) {
             <span class="badge badge-agotado">Agotado</span>
-          } @else if (producto.stock <= 5) {
-            <span class="badge badge-pocas">¡Últimas unidades!</span>
           }
         </div>
 
@@ -97,8 +95,8 @@
                 <span class="precio-anterior">{{ producto.precioAnterior | currency:'COP':'symbol':'1.0-0' }}</span>
               }
             </div>
-            <button class="btn-agregar" (click)="agregarAlCarrito(producto, $event)" [disabled]="producto.stock === 0">
-              {{ producto.stock === 0 ? 'Agotado' : 'Agregar' }} 🛒
+            <button class="btn-agregar" (click)="agregarAlCarrito(producto, $event)" [disabled]="!producto.activo">
+              {{ !producto.activo ? 'Agotado' : 'Agregar' }} 🛒
             </button>
           </div>
         </div>

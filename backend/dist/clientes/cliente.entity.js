@@ -29,7 +29,7 @@ __decorate([
     __metadata("design:type", String)
 ], Cliente.prototype, "nombre", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], Cliente.prototype, "telefono", void 0);
 __decorate([

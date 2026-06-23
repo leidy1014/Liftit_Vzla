@@ -22,6 +22,6 @@ export class ResenasController {
     @Req() req: any,
     @Body() body: { productoId: number; puntuacion: number; comentario?: string },
   ) {
-    return this.resenasService.crear(req.user.sub, body.productoId, body.puntuacion, body.comentario);
+    return this.resenasService.crear(req.user.id, body.productoId, body.puntuacion, body.comentario);
   }
 }

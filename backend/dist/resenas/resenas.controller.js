@@ -28,7 +28,7 @@ let ResenasController = class ResenasController {
         return this.resenasService.getByProducto(id);
     }
     crear(req, body) {
-        return this.resenasService.crear(req.user.sub, body.productoId, body.puntuacion, body.comentario);
+        return this.resenasService.crear(req.user.id, body.productoId, body.puntuacion, body.comentario);
     }
 };
 exports.ResenasController = ResenasController;

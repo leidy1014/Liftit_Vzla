@@ -8,7 +8,7 @@ export class Cliente {
     @Column()
     nombre: string;
 
-    @Column()
+    @Column({ nullable: true })
     telefono: string;
 
     @Column({ nullable: true })
