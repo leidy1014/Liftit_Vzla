@@ -10,22 +10,6 @@ import { ToastService } from '../../shared/toast/toast.service';
 import { ResenasService } from '../../resenas/resenas.service';
 import { environment } from '../../../environments/environment';
 
-interface CategoriaConfig {
-  nombre: string;
-  icono: string;
-}
-
-const CATEGORIAS_ICONOS: CategoriaConfig[] = [
-  { nombre: 'Tapetes',                    icono: '🧘' },
-  { nombre: 'Kits de hierro',             icono: '🏋️' },
-  { nombre: 'Maquinas multifuerzas',      icono: '⚙️' },
-  { nombre: 'Mancuernas encauchadas',     icono: '💪' },
-  { nombre: 'Bancos de entrenamiento',    icono: '🪑' },
-  { nombre: 'Proteinas',                  icono: '🥤' },
-  { nombre: 'Barras y discos olimpicos',  icono: '🏅' },
-  { nombre: 'Accesorios',                 icono: '🎽' },
-  { nombre: 'Linea Sportfitness',         icono: '⭐' },
-];
 
 @Component({
   selector: 'app-productos-lista',
@@ -97,18 +81,9 @@ export class ProductosLista implements OnInit {
     });
   }
 
-  getIcono(nombreCategoria: string): string {
-    const normalizar = (s: string) => s.toLowerCase()
-      .normalize('NFD').replace(/[̀-ͯ]/g, '');
-    const config = CATEGORIAS_ICONOS.find(c =>
-      normalizar(c.nombre) === normalizar(nombreCategoria)
-    );
-    return config?.icono ?? '🏷️';
-  }
-
   agregarAlCarrito(producto: Producto, event: Event) {
     event.stopPropagation();
-    if (producto.stock === 0) {
+    if (!producto.activo) {
       this.toast.error('Este producto está agotado');
       return;
     }
