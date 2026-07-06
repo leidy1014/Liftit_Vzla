@@ -136,6 +136,33 @@
         <a routerLink="/productos" class="btn-volver-catalogo">← Volver al catálogo</a>
       </div>
 
+      <!-- ══ PRODUCTOS RELACIONADOS ══ -->
+      @if (relacionados().length > 0) {
+        <section class="relacionados-section">
+          <h2 class="relacionados-titulo">También te puede interesar</h2>
+          <div class="relacionados-grid">
+            @for (r of relacionados(); track r.id) {
+              <div class="rel-card" (click)="router.navigate(['/productos', r.id])">
+                <div class="rel-imagen">
+                  @if (r.imagen) {
+                    <img [src]="getImagenUrl(r.imagen)" [alt]="r.nombre" class="rel-img" />
+                  } @else {
+                    <div class="rel-placeholder">🏋️</div>
+                  }
+                </div>
+                <div class="rel-info">
+                  @if (r.categoria) {
+                    <span class="rel-cat">{{ r.categoria.nombre }}</span>
+                  }
+                  <p class="rel-nombre">{{ r.nombre }}</p>
+                  <p class="rel-precio">{{ r.precio | currency:'COP':'symbol':'1.0-0' }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+
       <!-- ══ RESEÑAS ══ -->
       <section class="resenas-section">
         <h2 class="resenas-titulo">Reseñas del producto</h2>

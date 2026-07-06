@@ -29,6 +29,7 @@ export class ProductoDetalle implements OnInit {
     imagenActiva = signal<string | null>(null);
     readonly LIMITE_DESCRIPCION = 300;
 
+    relacionados = signal<Producto[]>([]);
     resenas = signal<Resena[]>([]);
     nuevaPuntuacion = signal(0);
     nuevoComentario = signal('');
@@ -51,7 +52,7 @@ export class ProductoDetalle implements OnInit {
 
     constructor(
         private route: ActivatedRoute,
-        private router: Router,
+        public router: Router,
         private productosService: ProductosService,
         private carritoService: CarritoService,
         private resenasService: ResenasService,
@@ -66,12 +67,18 @@ export class ProductoDetalle implements OnInit {
         forkJoin([
             this.productosService.getById(id),
             this.resenasService.getByProducto(id),
+            this.productosService.getAll(),
         ]).subscribe({
-            next: ([p, resenas]) => {
+            next: ([p, resenas, todos]) => {
                 this.producto.set(p);
                 this.imagenActiva.set(p.imagen ?? null);
                 this.resenas.set(resenas);
                 this.cargando.set(false);
+
+                const rel = todos
+                    .filter(x => x.id !== id && x.categoria?.id === p.categoria?.id && x.activo)
+                    .slice(0, 4);
+                this.relacionados.set(rel);
 
                 const desc = p.descripcion
                     ? p.descripcion.slice(0, 155).trimEnd() + '...'
