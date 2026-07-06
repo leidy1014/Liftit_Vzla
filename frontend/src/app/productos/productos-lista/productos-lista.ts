@@ -1,6 +1,7 @@
 import { Component, OnInit, signal, computed, effect } from '@angular/core';
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { Title, Meta } from '@angular/platform-browser';
 import { forkJoin } from 'rxjs';
 import { ProductosService } from '../productos';
 import { Producto } from '../producto.interface';
@@ -69,6 +70,8 @@ export class ProductosLista implements OnInit {
     private resenasService: ResenasService,
     private router: Router,
     private toast: ToastService,
+    private titleService: Title,
+    private metaService: Meta,
   ) {
     effect(() => {
       this.busqueda();
@@ -78,6 +81,11 @@ export class ProductosLista implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Catálogo | Liftit Fitness — Equipamiento Deportivo Colombia');
+    this.metaService.updateTag({ name: 'description', content: 'Explora nuestro catálogo de equipamiento deportivo profesional: pesas rusas, barras, accesorios de gimnasio y más. Envíos a todo Colombia.' });
+    this.metaService.updateTag({ property: 'og:title', content: 'Catálogo | Liftit Fitness — Equipamiento Deportivo' });
+    this.metaService.updateTag({ property: 'og:url', content: 'https://liftitfitnesscol.com/productos' });
+
     forkJoin([
       this.productosService.getAll(),
       this.resenasService.getResumen(),

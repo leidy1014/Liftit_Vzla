@@ -2,6 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { Title, Meta } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { ProductosService } from '../productos';
 import { CarritoService } from '../../carrito/carrito.service';
@@ -56,6 +57,8 @@ export class ProductoDetalle implements OnInit {
         private resenasService: ResenasService,
         public authService: AuthService,
         private toast: ToastService,
+        private titleService: Title,
+        private metaService: Meta,
     ) {}
 
     ngOnInit() {
@@ -69,6 +72,20 @@ export class ProductoDetalle implements OnInit {
                 this.imagenActiva.set(p.imagen ?? null);
                 this.resenas.set(resenas);
                 this.cargando.set(false);
+
+                const desc = p.descripcion
+                    ? p.descripcion.slice(0, 155).trimEnd() + '...'
+                    : `${p.nombre} — Equipamiento deportivo profesional. Cómpralo en Liftit Fitness Colombia.`;
+                const imagen = p.imagen
+                    ? `${environment.uploadsUrl}/${p.imagen}`
+                    : 'https://liftitfitnesscol.com/hero-banner.jpg.png';
+
+                this.titleService.setTitle(`${p.nombre} | Liftit Fitness`);
+                this.metaService.updateTag({ name: 'description', content: desc });
+                this.metaService.updateTag({ property: 'og:title', content: `${p.nombre} | Liftit Fitness` });
+                this.metaService.updateTag({ property: 'og:description', content: desc });
+                this.metaService.updateTag({ property: 'og:image', content: imagen });
+                this.metaService.updateTag({ property: 'og:url', content: `https://liftitfitnesscol.com/productos/${p.id}` });
             },
             error: () => { this.cargando.set(false); this.router.navigate(['/productos']); },
         });

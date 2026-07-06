@@ -12,6 +12,7 @@ import { Register } from './auth/register/register';
 import { ProductoDetalle } from './productos/producto-detalle/producto-detalle';
 import { PoliticaGarantia } from './politicas/politica-garantia/politica-garantia';
 import { PoliticaRetracto } from './politicas/politica-retracto/politica-retracto';
+import { PoliticaPrivacidad } from './politicas/politica-privacidad/politica-privacidad';
 
 export const routes: Routes = [
   { path: 'productos', component: ProductosLista },
@@ -21,6 +22,7 @@ export const routes: Routes = [
   { path: 'carrito', component: Carrito },
   { path: 'politica-garantia', component: PoliticaGarantia },
   { path: 'politica-retracto', component: PoliticaRetracto },
+  { path: 'politica-privacidad', component: PoliticaPrivacidad },
   {
     path: 'admin',
     component: AdminLayout,
