@@ -88,6 +88,86 @@
 }
 
 /* ══════════════════════════════
+   MEDIOS DE PAGO
+══════════════════════════════ */
+.medios-pago-bar {
+  background: #FFFFFF;
+  border-bottom: 1px solid #EEEEEE;
+  padding: 0.85rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.medios-label {
+  font-family: var(--cg-font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #AAAAAA;
+  white-space: nowrap;
+}
+
+.medios-logos {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.medios-sep {
+  color: #DDDDDD;
+  font-size: 1rem;
+}
+
+.medio-item {
+  display: flex;
+  align-items: center;
+}
+
+.medio-bancolombia {
+  background: #FDE400;
+  padding: 0.3rem 0.75rem;
+  border-radius: 5px;
+}
+
+.medio-svg {
+  width: 100px;
+  height: 18px;
+  display: block;
+}
+
+.medio-breb {
+  background: #1A1A1A;
+  padding: 0.3rem 0.75rem;
+  border-radius: 5px;
+}
+
+.medio-texto-breb {
+  font-family: var(--cg-font-heading);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #FDE400;
+  letter-spacing: 1px;
+  text-transform: lowercase;
+}
+
+.medio-addi-img {
+  height: 26px;
+  width: auto;
+  display: block;
+  border-radius: 5px;
+}
+
+@media (max-width: 600px) {
+  .medios-pago-bar { padding: 0.75rem 1rem; gap: 0.75rem; }
+  .medios-logos { gap: 0.65rem; }
+}
+
+/* ══════════════════════════════
    LAYOUT CATÁLOGO + SIDEBAR
 ══════════════════════════════ */
 .catalogo-wrapper {

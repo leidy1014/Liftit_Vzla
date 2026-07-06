@@ -3,6 +3,7 @@ import { CurrencyPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { CarritoItem } from './carrito.interface';
 import { CarritoService } from './carrito.service';
+import { AuthService } from '../auth/auth';
 import { environment } from '../../environments/environment';
 import { Navbar } from '../shared/navbar/navbar';
 import { ToastService } from '../shared/toast/toast.service';
@@ -16,6 +17,7 @@ import { ToastService } from '../shared/toast/toast.service';
 export class Carrito {
   private carritoService = inject(CarritoService);
   private toast = inject(ToastService);
+  public authService = inject(AuthService);
 
   items = this.carritoService.items;
   procesando = signal(false);

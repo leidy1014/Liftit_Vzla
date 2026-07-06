@@ -61,6 +61,13 @@
         </a>
 
         <a routerLink="/productos" class="btn-seguir-exito">← Seguir comprando</a>
+
+        @if (!authService.estaLogueado()) {
+          <p class="exito-login-hint">
+            <a routerLink="/login" class="exito-login-link">Inicia sesión</a>
+            para ver el historial de tus pedidos
+          </p>
+        }
       </div>
     </div>
   </div>
@@ -147,6 +154,13 @@
           </button>
 
           <a routerLink="/productos" class="btn-seguir">← Seguir comprando</a>
+
+          @if (!authService.estaLogueado()) {
+            <p class="resumen-login-hint">
+              <a routerLink="/login" class="resumen-login-link">Inicia sesión</a>
+              para guardar el historial de tus pedidos
+            </p>
+          }
         </div>
       }
 
