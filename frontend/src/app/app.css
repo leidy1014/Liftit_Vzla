@@ -31,8 +31,8 @@
   line-height: 1;
 }
 
-.addi-logo-svg {
-  width: 52px;
+.addi-logo-img {
+  width: 56px;
   height: auto;
   display: block;
 }
@@ -44,7 +44,7 @@
     padding: 0.45rem 0.9rem 0.5rem;
   }
 
-  .addi-logo-svg {
-    width: 44px;
+  .addi-logo-img {
+    width: 46px;
   }
 }
