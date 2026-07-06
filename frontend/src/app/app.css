@@ -5,16 +5,13 @@
   bottom: 2rem;
   background: #ffffff;
   border-radius: 10px;
-  padding: 0.5rem 0.85rem;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.55rem;
+  padding: 0.5rem;
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.13);
   border: 1px solid #E8E8E8;
   z-index: 800;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: default;
+  line-height: 0;
 }
 
 .addi-badge:hover {
@@ -22,18 +19,11 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
 }
 
-.addi-label {
-  font-size: 0.72rem;
-  color: #999999;
-  font-weight: 500;
-  font-family: 'Barlow', sans-serif;
-  white-space: nowrap;
-}
-
 .addi-logo-img {
-  height: 26px;
+  height: 36px;
   width: auto;
   display: block;
+  border-radius: 6px;
 }
 
 @media (max-width: 600px) {
@@ -43,6 +33,6 @@
   }
 
   .addi-logo-img {
-    height: 22px;
+    height: 30px;
   }
 }
