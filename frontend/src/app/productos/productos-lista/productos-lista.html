@@ -19,6 +19,7 @@
         ← Todas las categorías
       </button>
     } @else {
+      <p class="cats-movil-titulo">Explorar por categoría</p>
       <div class="cats-movil-grid">
         @for (cat of categorias(); track cat.id) {
           <button class="cat-movil-card" (click)="categoriaActiva.set(cat.nombre)">
