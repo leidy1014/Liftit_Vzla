@@ -226,6 +226,109 @@
   box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
 }
 
+/* ══════════════════════════════
+   BARRA DE FILTROS
+══════════════════════════════ */
+.filtros-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  background: #F8F8F8;
+  border: 1px solid #EEEEEE;
+  border-radius: var(--cg-radius);
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filtros-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #AAAAAA;
+  white-space: nowrap;
+}
+
+.filtros-precio {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.precio-input {
+  width: 100px;
+  padding: 0.45rem 0.65rem;
+  border: 1.5px solid #DDDDDD;
+  border-radius: 6px;
+  font-family: var(--cg-font-body);
+  font-size: 0.85rem;
+  color: #1A1A1A;
+  background: #FFFFFF;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.precio-input:focus {
+  border-color: #1A1A1A;
+}
+
+.precio-sep {
+  color: #BBBBBB;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.filtros-orden {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.orden-btn {
+  padding: 0.45rem 0.85rem;
+  border: 1.5px solid #DDDDDD;
+  border-radius: 6px;
+  background: #FFFFFF;
+  font-family: var(--cg-font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555555;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.orden-btn:hover {
+  border-color: #1A1A1A;
+  color: #1A1A1A;
+}
+
+.orden-btn.activo {
+  background: #1A1A1A;
+  border-color: #1A1A1A;
+  color: #FFFFFF;
+}
+
+.btn-limpiar-filtros {
+  background: none;
+  border: none;
+  font-family: var(--cg-font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #999999;
+  cursor: pointer;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  transition: color 0.15s;
+  white-space: nowrap;
+}
+
+.btn-limpiar-filtros:hover {
+  color: #1A1A1A;
+}
+
 /* Grid de productos */
 .productos-grid {
   display: grid;
@@ -466,7 +569,7 @@
 ══════════════════════════════ */
 .beneficios-section {
   background: #111111;
-  margin-top: 4rem;
+  margin-top: 3rem;
   padding: 2.5rem 2rem;
 }
 
@@ -744,6 +847,11 @@
   .productos-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
   .beneficios-inner { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
   .footer-inner { grid-template-columns: 1fr; gap: 1.5rem; padding: 2rem 1rem; }
+
+  .filtros-bar { gap: 0.65rem; padding: 0.65rem 0.75rem; }
+  .filtros-orden { margin-left: 0; width: 100%; }
+  .precio-input { width: 80px; font-size: 0.8rem; }
+  .orden-btn { font-size: 0.75rem; padding: 0.4rem 0.65rem; flex: 1; justify-content: center; display: flex; }
 }
 
 @media (max-width: 380px) {

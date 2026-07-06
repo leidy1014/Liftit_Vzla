@@ -13,6 +13,7 @@ import { ProductoDetalle } from './productos/producto-detalle/producto-detalle';
 import { PoliticaGarantia } from './politicas/politica-garantia/politica-garantia';
 import { PoliticaRetracto } from './politicas/politica-retracto/politica-retracto';
 import { PoliticaPrivacidad } from './politicas/politica-privacidad/politica-privacidad';
+import { NotFound } from './not-found/not-found';
 
 export const routes: Routes = [
   { path: 'productos', component: ProductosLista },
@@ -35,4 +36,5 @@ export const routes: Routes = [
     ]
   },
   { path: '', redirectTo: 'productos', pathMatch: 'full' },
+  { path: '**', component: NotFound },
 ];

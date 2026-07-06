@@ -25,6 +25,9 @@ export class ProductosLista implements OnInit {
   categoriaActiva = signal<string | null>(null);
   busqueda = signal('');
   paginaActual = signal(1);
+  precioMin = signal<number | null>(null);
+  precioMax = signal<number | null>(null);
+  ordenamiento = signal<'asc' | 'desc' | ''>('');
   readonly productosPorPagina = 12;
 
   // Categorías únicas con imagen del primer producto de cada una
@@ -47,13 +50,26 @@ export class ProductosLista implements OnInit {
     let lista = this.productos();
     const cat = this.categoriaActiva();
     const texto = this.busqueda().toLowerCase().trim();
+    const min = this.precioMin();
+    const max = this.precioMax();
+    const ord = this.ordenamiento();
+
     if (cat) lista = lista.filter(p => p.categoria?.nombre === cat);
     if (texto) lista = lista.filter(p =>
       p.nombre.toLowerCase().includes(texto) ||
       (p.descripcion && p.descripcion.toLowerCase().includes(texto))
     );
+    if (min !== null) lista = lista.filter(p => p.precio >= min);
+    if (max !== null) lista = lista.filter(p => p.precio <= max);
+    if (ord === 'asc') lista = [...lista].sort((a, b) => a.precio - b.precio);
+    else if (ord === 'desc') lista = [...lista].sort((a, b) => b.precio - a.precio);
+
     return lista;
   });
+
+  hayFiltrosActivos = computed(() =>
+    this.precioMin() !== null || this.precioMax() !== null || this.ordenamiento() !== ''
+  );
 
   totalPaginas = computed(() =>
     Math.max(1, Math.ceil(this.productosFiltrados().length / this.productosPorPagina))
@@ -76,6 +92,9 @@ export class ProductosLista implements OnInit {
     effect(() => {
       this.busqueda();
       this.categoriaActiva();
+      this.precioMin();
+      this.precioMax();
+      this.ordenamiento();
       this.paginaActual.set(1);
     });
   }

@@ -1,0 +1,78 @@
+.nf-page {
+  min-height: calc(100vh - 400px);
+  background: #0A0A0A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 2rem;
+  text-align: center;
+}
+
+.nf-content {
+  max-width: 480px;
+  width: 100%;
+}
+
+.nf-eyebrow {
+  font-family: var(--cg-font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: #555555;
+  margin-bottom: 1rem;
+}
+
+.nf-number {
+  font-family: var(--cg-font-heading);
+  font-size: 10rem;
+  font-weight: 800;
+  color: transparent;
+  -webkit-text-stroke: 2px #2A2A2A;
+  line-height: 1;
+  letter-spacing: -4px;
+  margin-bottom: 1rem;
+}
+
+.nf-title {
+  font-family: var(--cg-font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 1rem;
+}
+
+.nf-desc {
+  font-size: 0.9rem;
+  color: #666666;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+}
+
+.nf-btn {
+  display: inline-block;
+  background: #FFFFFF;
+  color: #000000;
+  padding: 0.9rem 2.5rem;
+  border-radius: 4px;
+  font-family: var(--cg-font-heading);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+
+.nf-btn:hover {
+  background: #E0E0E0;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255,255,255,0.06);
+}
+
+@media (max-width: 600px) {
+  .nf-number { font-size: 6.5rem; }
+  .nf-title { font-size: 1.2rem; letter-spacing: 2px; }
+}

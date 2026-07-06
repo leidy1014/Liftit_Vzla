@@ -86,6 +86,48 @@
       </div>
     </div>
 
+    <!-- Barra de filtros: precio y ordenamiento -->
+    <div class="filtros-bar">
+      <div class="filtros-precio">
+        <span class="filtros-label">Precio</span>
+        <input
+          type="number"
+          class="precio-input"
+          placeholder="Mín"
+          min="0"
+          [value]="precioMin() ?? ''"
+          (change)="precioMin.set($any($event.target).value !== '' ? +$any($event.target).value : null)" />
+        <span class="precio-sep">—</span>
+        <input
+          type="number"
+          class="precio-input"
+          placeholder="Máx"
+          min="0"
+          [value]="precioMax() ?? ''"
+          (change)="precioMax.set($any($event.target).value !== '' ? +$any($event.target).value : null)" />
+      </div>
+      <div class="filtros-orden">
+        <span class="filtros-label">Ordenar</span>
+        <button
+          class="orden-btn"
+          [class.activo]="ordenamiento() === 'asc'"
+          (click)="ordenamiento.set(ordenamiento() === 'asc' ? '' : 'asc')">
+          ↑ Menor precio
+        </button>
+        <button
+          class="orden-btn"
+          [class.activo]="ordenamiento() === 'desc'"
+          (click)="ordenamiento.set(ordenamiento() === 'desc' ? '' : 'desc')">
+          ↓ Mayor precio
+        </button>
+      </div>
+      @if (hayFiltrosActivos()) {
+        <button class="btn-limpiar-filtros" (click)="precioMin.set(null); precioMax.set(null); ordenamiento.set('')">
+          × Limpiar filtros
+        </button>
+      }
+    </div>
+
     <!-- Grid de productos -->
     <div class="productos-grid">
       @for (producto of productosPaginados(); track producto.id) {
@@ -136,7 +178,7 @@
       <div class="empty-state">
         <span class="empty-icon">🔍</span>
         <p>No hay productos que coincidan.</p>
-        <button class="btn-reset" (click)="busqueda.set(''); categoriaActiva.set(null)">Ver todos</button>
+        <button class="btn-reset" (click)="busqueda.set(''); categoriaActiva.set(null); precioMin.set(null); precioMax.set(null); ordenamiento.set('')">Ver todos</button>
       </div>
     }
 

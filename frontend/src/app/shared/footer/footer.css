@@ -1,7 +1,45 @@
 .site-footer {
   background: #000000;
   color: #FFFFFF;
-  margin-top: 4rem;
+}
+
+/* ── Banner de envíos ── */
+.footer-banner {
+  background: #111111;
+  border-bottom: 1px solid #1E1E1E;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.footer-banner-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.footer-banner-text {
+  font-family: var(--cg-font-heading);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #CCCCCC;
+}
+
+.footer-banner-sep {
+  color: #444444;
+  margin: 0 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .footer-banner-text {
+    font-size: 0.65rem;
+    letter-spacing: 1.5px;
+  }
+  .footer-banner-sep { display: none; }
 }
 
 .footer-main {
