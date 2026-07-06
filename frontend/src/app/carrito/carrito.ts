@@ -21,6 +21,8 @@ export class Carrito {
   procesando = signal(false);
   pedidoEnviado = signal(false);
   whatsappUrl = signal('');
+  pedidoItems = signal<CarritoItem[]>([]);
+  pedidoTotal = signal(0);
 
   imagenUrl(imagen: string): string {
     return `${environment.uploadsUrl}/${imagen}`;
@@ -50,6 +52,8 @@ export class Carrito {
 
   confirmarPedido() {
     const url = this.carritoService.generarUrlWhatsapp();
+    this.pedidoItems.set([...this.items()]);
+    this.pedidoTotal.set(this.calcularTotal());
     this.whatsappUrl.set(url);
     this.carritoService.limpiar();
     this.pedidoEnviado.set(true);
