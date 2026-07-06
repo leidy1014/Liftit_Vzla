@@ -118,48 +118,16 @@
   flex-wrap: wrap;
 }
 
-.medios-sep {
-  color: #DDDDDD;
-  font-size: 1rem;
-}
-
-.medio-item {
-  display: flex;
-  align-items: center;
-}
-
-.medio-bancolombia {
-  background: #FDE400;
-  padding: 0.3rem 0.75rem;
-  border-radius: 5px;
-}
-
-.medio-svg {
-  width: 100px;
-  height: 18px;
-  display: block;
-}
-
-.medio-breb {
-  background: #1A1A1A;
-  padding: 0.3rem 0.75rem;
-  border-radius: 5px;
-}
-
-.medio-texto-breb {
-  font-family: var(--cg-font-heading);
-  font-size: 0.85rem;
-  font-weight: 800;
-  color: #FDE400;
-  letter-spacing: 1px;
-  text-transform: lowercase;
-}
-
-.medio-addi-img {
-  height: 26px;
+.medio-logo-img {
+  height: 32px;
   width: auto;
   display: block;
-  border-radius: 5px;
+  border-radius: 6px;
+  object-fit: contain;
+}
+
+.medio-logo-addi {
+  height: 28px;
 }
 
 @media (max-width: 600px) {
