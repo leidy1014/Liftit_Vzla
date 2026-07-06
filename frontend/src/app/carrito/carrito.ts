@@ -34,9 +34,13 @@ export class Carrito {
     return this.items().reduce((total, i) => total + i.cantidad * i.precio, 0);
   }
 
+  maxStock(item: CarritoItem): number {
+    return item.stock > 0 ? item.stock : 99;
+  }
+
   aumentar(item: CarritoItem) {
-    if (item.cantidad >= item.stock) {
-      this.toast.error(`Solo hay ${item.stock} unidades disponibles de "${item.nombre}"`);
+    if (item.cantidad >= this.maxStock(item)) {
+      this.toast.error(`Máximo ${this.maxStock(item)} unidades disponibles`);
       return;
     }
     this.carritoService.actualizar(item.productoId, item.cantidad + 1);
@@ -45,6 +49,16 @@ export class Carrito {
   disminuir(item: CarritoItem) {
     if (item.cantidad <= 1) return;
     this.carritoService.actualizar(item.productoId, item.cantidad - 1);
+  }
+
+  setCantidad(item: CarritoItem, valor: string) {
+    const n = parseInt(valor, 10);
+    if (isNaN(n) || n < 1) {
+      this.carritoService.actualizar(item.productoId, 1);
+      return;
+    }
+    const max = this.maxStock(item);
+    this.carritoService.actualizar(item.productoId, Math.min(n, max));
   }
 
   eliminar(productoId: number) {

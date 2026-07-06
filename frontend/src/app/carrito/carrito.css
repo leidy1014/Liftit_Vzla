@@ -389,12 +389,22 @@
   cursor: not-allowed;
 }
 
-.cantidad-numero {
+.cantidad-input {
+  width: 46px;
+  text-align: center;
   font-size: 0.95rem;
   font-weight: 700;
   color: #FFFFFF;
-  min-width: 20px;
-  text-align: center;
+  background: transparent;
+  border: none;
+  outline: none;
+  -moz-appearance: textfield;
+}
+
+.cantidad-input::-webkit-inner-spin-button,
+.cantidad-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .item-subtotal {

@@ -30,10 +30,11 @@ export class CarritoService {
   agregar(producto: { id: number; nombre: string; precio: number; stock: number; imagen?: string | null }, cantidad = 1) {
     const actuales = this._items();
     const idx = actuales.findIndex(i => i.productoId === producto.id);
+    const maxStock = producto.stock > 0 ? producto.stock : 99;
 
     if (idx >= 0) {
       const nuevos = [...actuales];
-      const nueva = Math.min(nuevos[idx].cantidad + cantidad, producto.stock);
+      const nueva = Math.min(nuevos[idx].cantidad + cantidad, maxStock);
       nuevos[idx] = { ...nuevos[idx], cantidad: nueva };
       this.guardar(nuevos);
     } else {

@@ -114,8 +114,15 @@
               <span class="cantidad-label">Cantidad</span>
               <div class="cantidad-controles">
                 <button class="btn-cantidad" (click)="disminuir(item)" [disabled]="item.cantidad <= 1">−</button>
-                <span class="cantidad-numero">{{ item.cantidad }}</span>
-                <button class="btn-cantidad" (click)="aumentar(item)" [disabled]="item.cantidad >= item.stock">+</button>
+                <input
+                  class="cantidad-input"
+                  type="number"
+                  [value]="item.cantidad"
+                  min="1"
+                  [max]="maxStock(item)"
+                  (change)="setCantidad(item, $any($event.target).value)"
+                  (focus)="$any($event.target).select()" />
+                <button class="btn-cantidad" (click)="aumentar(item)" [disabled]="item.cantidad >= maxStock(item)">+</button>
               </div>
             </div>
 
