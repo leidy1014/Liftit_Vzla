@@ -84,7 +84,7 @@
 .hero-cta:hover {
   background: var(--cg-magenta-dark);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(227,30,36,0.4);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
 }
 
 /* ══════════════════════════════
@@ -152,7 +152,7 @@
 }
 
 .sidebar-item.activa {
-  background: #FFF0F3;
+  background: #F0F0F0;
   color: var(--cg-magenta);
   font-weight: 700;
   border-left-color: var(--cg-magenta);
@@ -223,7 +223,7 @@
 
 .busqueda-input:focus {
   border-color: var(--cg-magenta);
-  box-shadow: 0 0 0 3px rgba(227,30,36,0.1);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
 }
 
 /* Grid de productos */
@@ -592,6 +592,11 @@
 }
 
 /* ══════════════════════════════
+   CATEGORÍAS MÓVIL (grid con imágenes)
+══════════════════════════════ */
+.cats-movil { display: none; }
+
+/* ══════════════════════════════
    RESPONSIVE
 ══════════════════════════════ */
 @media (max-width: 1024px) {
@@ -607,55 +612,113 @@
   .hero-body { padding: 2rem 1.5rem; }
 }
 
-/* En tablet: sidebar se vuelve lista horizontal scrolleable arriba */
 @media (max-width: 768px) {
+  /* Ocultar sidebar en móvil — reemplazado por el grid de imágenes */
+  .sidebar-categorias { display: none; }
+
+  /* Mostrar grid de categorías con imágenes */
+  .cats-movil {
+    display: block;
+    padding: 1.25rem 1rem 0.5rem;
+    background: #F5F5F5;
+  }
+
+  .cats-movil-volver {
+    background: none;
+    border: none;
+    font-family: var(--cg-font-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #1A1A1A;
+    cursor: pointer;
+    padding: 0.5rem 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .cats-movil-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.65rem;
+  }
+
+  .cat-movil-card {
+    background: #FFFFFF;
+    border: 1px solid #E8E8E8;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
+    transition: box-shadow 0.15s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cat-movil-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .cat-movil-img-wrap {
+    aspect-ratio: 1;
+    background: #F5F5F5;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .cat-movil-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .cat-movil-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    background: #EEEEEE;
+  }
+
+  .cat-movil-footer {
+    padding: 0.45rem 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.25rem;
+  }
+
+  .cat-movil-nombre {
+    font-family: var(--cg-font-body);
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #1A1A1A;
+    line-height: 1.2;
+    letter-spacing: 0.2px;
+  }
+
+  .cat-movil-arrow {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #888888;
+    flex-shrink: 0;
+  }
+
+  /* Ajustar el wrapper del catálogo sin sidebar */
   .catalogo-wrapper {
     flex-direction: column;
     gap: 0;
     padding: 0;
-    margin: 1.5rem auto;
-  }
-
-  .sidebar-categorias {
-    width: 100%;
-    position: static;
-    background: #FFFFFF;
-    border-bottom: 1px solid #E8E8E8;
-    padding: 0.75rem 1rem;
-  }
-
-  .sidebar-titulo { display: none; }
-
-  .sidebar-lista {
-    flex-direction: row;
-    gap: 0.4rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-    padding-bottom: 2px;
-  }
-
-  .sidebar-lista::-webkit-scrollbar { display: none; }
-
-  .sidebar-lista li { flex-shrink: 0; }
-
-  .sidebar-item {
-    padding: 0.4rem 0.85rem;
-    border-left: none;
-    border-radius: 20px;
-    font-size: 0.78rem;
-    border: 1.5px solid #E0E0E0;
-    white-space: nowrap;
-  }
-
-  .sidebar-item.activa {
-    background: var(--cg-magenta);
-    color: white;
-    border-color: var(--cg-magenta);
+    margin: 1rem auto;
   }
 
   .catalogo-main {
     padding: 0 1rem;
-    margin-top: 1.5rem;
+    margin-top: 1rem;
   }
 }
 

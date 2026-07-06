@@ -1,10 +1,12 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
+import { forkJoin } from 'rxjs';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ProductosService } from '../productos';
 import { CarritoService } from '../../carrito/carrito.service';
 import { Navbar } from '../../shared/navbar/navbar';
+import { Footer } from '../../shared/footer/footer';
 import { ToastService } from '../../shared/toast/toast.service';
 import { Producto } from '../producto.interface';
 import { Resena } from '../../resenas/resena.interface';
@@ -14,7 +16,7 @@ import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-producto-detalle',
-    imports: [CurrencyPipe, DatePipe, RouterModule, FormsModule, Navbar],
+    imports: [CurrencyPipe, DatePipe, RouterModule, FormsModule, Navbar, Footer],
     templateUrl: './producto-detalle.html',
     styleUrl: './producto-detalle.css',
 })
@@ -58,12 +60,15 @@ export class ProductoDetalle implements OnInit {
 
     ngOnInit() {
         const id = Number(this.route.snapshot.paramMap.get('id'));
-        this.productosService.getById(id).subscribe({
-            next: (p) => {
+        forkJoin([
+            this.productosService.getById(id),
+            this.resenasService.getByProducto(id),
+        ]).subscribe({
+            next: ([p, resenas]) => {
                 this.producto.set(p);
                 this.imagenActiva.set(p.imagen ?? null);
+                this.resenas.set(resenas);
                 this.cargando.set(false);
-                this.cargarResenas(id);
             },
             error: () => { this.cargando.set(false); this.router.navigate(['/productos']); },
         });
@@ -134,6 +139,18 @@ export class ProductoDetalle implements OnInit {
         const precio = (p.precio * this.cantidad()).toLocaleString('es-CO');
         const msg = `Hola! Deseo realizar este pedido\n\n*${p.nombre}*\nCantidad: ${this.cantidad()}\nPrecio: $${precio}\n\n¿Está disponible?`;
         window.open(`https://wa.me/573213324759?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    compartirPorWhatsapp() {
+        const p = this.producto();
+        if (!p) return;
+        const url = `https://liftitfitnesscol.com/productos/${p.id}`;
+        const precio = p.precio.toLocaleString('es-CO');
+        const descuento = p.precioAnterior
+            ? `\n🏷️ Antes: $${p.precioAnterior.toLocaleString('es-CO')} COP`
+            : '';
+        const msg = `¡Hola! Te comparto este producto de *Liftit Fitness* 💪\n\n*${p.nombre}*${descuento}\n💰 Precio: $${precio} COP\n\nToca el enlace para ver la descripción completa y realizar tu pedido:\n👉 ${url}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     getImagenUrl(imagen: string): string {

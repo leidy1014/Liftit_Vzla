@@ -1,11 +1,13 @@
 import { Component, OnInit, signal, computed, effect } from '@angular/core';
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { ProductosService } from '../productos';
 import { Producto } from '../producto.interface';
 import { CarritoService } from '../../carrito/carrito.service';
 import { Router } from '@angular/router';
 import { Navbar } from '../../shared/navbar/navbar';
+import { Footer } from '../../shared/footer/footer';
 import { ToastService } from '../../shared/toast/toast.service';
 import { ResenasService } from '../../resenas/resenas.service';
 import { environment } from '../../../environments/environment';
@@ -13,7 +15,7 @@ import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-productos-lista',
-  imports: [CurrencyPipe, DecimalPipe, RouterModule, Navbar],
+  imports: [CurrencyPipe, DecimalPipe, RouterModule, Navbar, Footer],
   templateUrl: './productos-lista.html',
   styleUrl: './productos-lista.css',
 })
@@ -22,15 +24,22 @@ export class ProductosLista implements OnInit {
   categoriaActiva = signal<string | null>(null);
   busqueda = signal('');
   paginaActual = signal(1);
-  readonly productosPorPagina = 8;
+  readonly productosPorPagina = 12;
 
-  // Solo categorías que tienen al menos 1 producto
+  // Categorías únicas con imagen del primer producto de cada una
   categorias = computed(() => {
-    const cats = this.productos()
-      .map(p => p.categoria)
-      .filter((c): c is NonNullable<typeof c> => !!c);
-    const unicas = new Map(cats.map(c => [c.id, c]));
-    return [...unicas.values()];
+    const mapa = new Map<number, { id: number; nombre: string; imagen: string | null }>();
+    for (const p of this.productos()) {
+      if (!p.categoria) continue;
+      if (!mapa.has(p.categoria.id)) {
+        mapa.set(p.categoria.id, {
+          id: p.categoria.id,
+          nombre: p.categoria.nombre,
+          imagen: p.imagen ?? null,
+        });
+      }
+    }
+    return [...mapa.values()];
   });
 
   productosFiltrados = computed(() => {
@@ -69,15 +78,16 @@ export class ProductosLista implements OnInit {
   }
 
   ngOnInit() {
-    this.productosService.getAll().subscribe(productos => {
-      this.resenasService.getResumen().subscribe(resumen => {
-        const mapaResenas = new Map(resumen.map(r => [r.productoId, r]));
-        this.productos.set(productos.map(p => ({
-          ...p,
-          calificacionPromedio: mapaResenas.get(p.id)?.promedio ?? 0,
-          totalResenas: mapaResenas.get(p.id)?.total ?? 0,
-        })));
-      });
+    forkJoin([
+      this.productosService.getAll(),
+      this.resenasService.getResumen(),
+    ]).subscribe(([productos, resumen]) => {
+      const mapaResenas = new Map(resumen.map(r => [r.productoId, r]));
+      this.productos.set(productos.map(p => ({
+        ...p,
+        calificacionPromedio: mapaResenas.get(p.id)?.promedio ?? 0,
+        totalResenas: mapaResenas.get(p.id)?.total ?? 0,
+      })));
     });
   }
 
@@ -103,13 +113,17 @@ export class ProductosLista implements OnInit {
     return Array.from({ length: 5 }, (_, i) => i < Math.round(promedio) ? '★' : '☆');
   }
 
+  private scrollACatalogo() {
+    document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' });
+  }
+
   paginaAnterior() {
     if (this.paginaActual() > 1) this.paginaActual.update(p => p - 1);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.scrollACatalogo();
   }
 
   paginaSiguiente() {
     if (this.paginaActual() < this.totalPaginas()) this.paginaActual.update(p => p + 1);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.scrollACatalogo();
   }
 }

@@ -1,0 +1,182 @@
+.site-footer {
+  background: #000000;
+  color: #FFFFFF;
+  margin-top: 4rem;
+}
+
+.footer-main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ── Marca ── */
+.footer-brand-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.footer-logo-img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  background: #1A1A1A;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.footer-brand-name {
+  font-family: var(--cg-font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.footer-desc {
+  font-size: 0.85rem;
+  color: #777777;
+  line-height: 1.6;
+  max-width: 420px;
+}
+
+.footer-address {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: #999999;
+}
+
+.addr-icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: #666666;
+}
+
+/* ── Redes sociales ── */
+.footer-social-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid #1A1A1A;
+  border-bottom: 1px solid #1A1A1A;
+}
+
+.footer-social-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #555555;
+}
+
+.footer-social-icons {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #111111;
+  color: #CCCCCC;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+  text-decoration: none;
+}
+
+.social-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.social-icon:hover {
+  background: #FFFFFF;
+  color: #000000;
+  transform: translateY(-3px);
+}
+
+/* ── Políticas ── */
+.footer-politicas {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #1A1A1A;
+}
+
+.footer-politica-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid #1A1A1A;
+  text-decoration: none;
+  color: #BBBBBB;
+  font-family: var(--cg-font-body);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: color 0.15s;
+  gap: 1rem;
+}
+
+.footer-politica-link:hover {
+  color: #FFFFFF;
+}
+
+.chevron {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: #444444;
+}
+
+.footer-politica-link:hover .chevron {
+  color: #FFFFFF;
+}
+
+/* ── Copyright ── */
+.footer-bottom {
+  border-top: 1px solid #111111;
+  padding: 1.25rem 2rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: #333333;
+}
+
+@media (max-width: 600px) {
+  .footer-main {
+    padding: 2.5rem 1.25rem 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .footer-brand-name { font-size: 1.3rem; }
+
+  .footer-social-icons { gap: 1rem; }
+
+  .social-icon { width: 40px; height: 40px; }
+  .social-icon svg { width: 18px; height: 18px; }
+
+  .footer-politica-link { font-size: 0.72rem; }
+}

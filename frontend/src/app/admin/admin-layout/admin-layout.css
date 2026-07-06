@@ -241,7 +241,7 @@
 }
 
 .confirm-btn-ok.normal {
-  background: linear-gradient(135deg, var(--cg-magenta), var(--cg-pink));
+  background: linear-gradient(135deg, #1A1A1A, #444444);
   color: white;
 }
 

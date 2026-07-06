@@ -1,7 +1,7 @@
 :root {
-  --cg-magenta: #E31E24;
-  --cg-magenta-dark: #B51519;
-  --cg-pink: #FF5252;
+  --cg-magenta: #1A1A1A;
+  --cg-magenta-dark: #000000;
+  --cg-pink: #333333;
   --cg-pink-light: #1E1E1E;
   --cg-pink-medium: #2A2A2A;
   --cg-white: #FFFFFF;
@@ -9,7 +9,7 @@
   --cg-text-muted: #777777;
   --cg-border: #333333;
   --cg-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  --cg-shadow-hover: 0 8px 32px rgba(227, 30, 36, 0.35);
+  --cg-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.2);
   --cg-radius: 4px;
   --cg-font-heading: 'Barlow Condensed', sans-serif;
   --cg-font-body: 'Barlow', sans-serif;
@@ -26,6 +26,11 @@ body {
   background-color: #F5F5F5;
   color: #1A1A1A;
   overflow-x: hidden;
+  padding-top: 71px; /* navbar 68px + border 3px */
+}
+
+@media (max-width: 768px) {
+  body { padding-top: 61px; } /* navbar 58px + border 3px */
 }
 
 h1, h2, h3 {
@@ -133,7 +138,7 @@ h1, h2, h3 {
 
 .btn-admin-primary:hover {
   background: var(--cg-magenta-dark) !important;
-  box-shadow: 0 4px 15px rgba(227, 30, 36, 0.3) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25) !important;
 }
 
 /* === TOAST NOTIFICATIONS === */

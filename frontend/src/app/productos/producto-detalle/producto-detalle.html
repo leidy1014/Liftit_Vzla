@@ -120,6 +120,9 @@
             <button class="btn-whatsapp" (click)="pedirPorWhatsapp()">
               <span class="wa-icon">💬</span> Pedir por WhatsApp
             </button>
+            <button class="btn-compartir" (click)="compartirPorWhatsapp()">
+              Compartir producto →
+            </button>
           </div>
 
           @if (!producto()!.activo) {
@@ -205,11 +208,4 @@
 
 </div>
 
-<!-- Footer -->
-<footer class="site-footer">
-  <div class="footer-brand">
-    <img src="/logo.png.jpeg" alt="Liftit Fitness" class="footer-logo" />
-    <span class="footer-name">LIFTIT FITNESS</span>
-  </div>
-  <p class="footer-tagline">Entrena duro. Rinde más.</p>
-</footer>
+<app-footer />

@@ -11,6 +11,35 @@
   </div>
 </section>
 
+<!-- ══ CATEGORÍAS MÓVIL (grid con imágenes) ══ -->
+@if (categorias().length > 0) {
+  <div class="cats-movil">
+    @if (categoriaActiva() !== null) {
+      <button class="cats-movil-volver" (click)="categoriaActiva.set(null)">
+        ← Todas las categorías
+      </button>
+    } @else {
+      <div class="cats-movil-grid">
+        @for (cat of categorias(); track cat.id) {
+          <button class="cat-movil-card" (click)="categoriaActiva.set(cat.nombre)">
+            <div class="cat-movil-img-wrap">
+              @if (cat.imagen) {
+                <img [src]="imagenUrl(cat.imagen)" [alt]="cat.nombre" class="cat-movil-img" />
+              } @else {
+                <div class="cat-movil-placeholder">🏋️</div>
+              }
+            </div>
+            <div class="cat-movil-footer">
+              <span class="cat-movil-nombre">{{ cat.nombre }}</span>
+              <span class="cat-movil-arrow">›</span>
+            </div>
+          </button>
+        }
+      </div>
+    }
+  </div>
+}
+
 <!-- ══ CATÁLOGO + SIDEBAR ══ -->
 <div class="catalogo-wrapper" id="catalogo">
 
@@ -155,32 +184,4 @@
   </div>
 </section>
 
-<!-- ══ FOOTER ══ -->
-<footer class="site-footer">
-  <div class="footer-inner">
-    <div class="footer-brand-col">
-      <div class="footer-brand">
-        <img src="/logo.png.jpeg" alt="Liftit Fitness" class="footer-logo" />
-        <span class="footer-name">LIFTIT FITNESS</span>
-      </div>
-      <p class="footer-desc">Equipamiento profesional para entrenamiento de fuerza, cardio y funcional. Calidad que rinde más.</p>
-    </div>
-    <div class="footer-col">
-      <h4 class="footer-col-title">Catálogo</h4>
-      <a routerLink="/productos" class="footer-link">Todos los productos</a>
-    </div>
-    <div class="footer-col">
-      <h4 class="footer-col-title">Ayuda</h4>
-      <span class="footer-link">Preguntas frecuentes</span>
-      <span class="footer-link">Envíos y entregas</span>
-    </div>
-    <div class="footer-col">
-      <h4 class="footer-col-title">Contacto</h4>
-      <span class="footer-link">WhatsApp: 300 123 4567</span>
-      <span class="footer-link">Bogotá, Colombia</span>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <p>© 2024 LIFTIT FITNESS. Todos los derechos reservados.</p>
-  </div>
-</footer>
+<app-footer />

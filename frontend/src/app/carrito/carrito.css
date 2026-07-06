@@ -165,7 +165,7 @@
 }
 
 .carrito-item:hover {
-  box-shadow: 0 4px 16px rgba(201, 27, 126, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
 }
 
 .item-imagen {
@@ -251,13 +251,13 @@
   justify-content: center;
   line-height: 1;
   transition: all 0.2s ease;
-  box-shadow: 0 1px 4px rgba(201,27,126,0.15);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
 .btn-cantidad:hover:not(:disabled) {
   background: var(--cg-magenta);
   color: white;
-  box-shadow: 0 2px 8px rgba(201,27,126,0.3);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 .btn-cantidad:disabled {

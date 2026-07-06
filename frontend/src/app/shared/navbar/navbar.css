@@ -1,8 +1,10 @@
 .navbar {
   background: #000000;
   border-bottom: 3px solid var(--cg-magenta);
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  width: 100%;
   z-index: 1000;
 }
 
@@ -169,7 +171,7 @@
 
 .nav-login-btn:hover {
   background: var(--cg-magenta-dark);
-  box-shadow: 0 4px 15px rgba(227, 30, 36, 0.4);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   transform: translateY(-1px);
 }
 

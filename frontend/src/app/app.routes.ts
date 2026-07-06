@@ -10,6 +10,8 @@ import { adminGuard } from './auth/role-guard';
 import { AdminClientes } from './admin/admin-clientes/admin-clientes';
 import { Register } from './auth/register/register';
 import { ProductoDetalle } from './productos/producto-detalle/producto-detalle';
+import { PoliticaGarantia } from './politicas/politica-garantia/politica-garantia';
+import { PoliticaRetracto } from './politicas/politica-retracto/politica-retracto';
 
 export const routes: Routes = [
   { path: 'productos', component: ProductosLista },
@@ -17,6 +19,8 @@ export const routes: Routes = [
   { path: 'login', component: Login },
   { path: 'register', component: Register },
   { path: 'carrito', component: Carrito },
+  { path: 'politica-garantia', component: PoliticaGarantia },
+  { path: 'politica-retracto', component: PoliticaRetracto },
   {
     path: 'admin',
     component: AdminLayout,
