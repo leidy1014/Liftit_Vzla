@@ -140,7 +140,7 @@ export class ProductosLista implements OnInit {
     return Array.from({ length: 5 }, (_, i) => i < Math.round(promedio) ? '★' : '☆');
   }
 
-  private scrollACatalogo() {
+  scrollACatalogo() {
     document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth' });
   }
 
