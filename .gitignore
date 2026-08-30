@@ -2,6 +2,9 @@
 node_modules/
 **/node_modules/
 
+# Build del frontend (va en backend/public/)
+frontend/dist/
+
 # Variables de entorno (¡nunca subir contraseñas!)
 .env
 .env.local
