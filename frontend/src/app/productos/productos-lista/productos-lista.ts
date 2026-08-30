@@ -34,13 +34,14 @@ export class ProductosLista implements OnInit {
   categorias = computed(() => {
     const mapa = new Map<number, { id: number; nombre: string; imagen: string | null }>();
     for (const p of this.productos()) {
-      if (!p.categoria) continue;
-      if (!mapa.has(p.categoria.id)) {
-        mapa.set(p.categoria.id, {
-          id: p.categoria.id,
-          nombre: p.categoria.nombre,
-          imagen: p.imagen ?? null,
-        });
+      for (const cat of p.categorias ?? []) {
+        if (!mapa.has(cat.id)) {
+          mapa.set(cat.id, {
+            id: cat.id,
+            nombre: cat.nombre,
+            imagen: p.imagen ?? null,
+          });
+        }
       }
     }
     return [...mapa.values()];
@@ -54,7 +55,7 @@ export class ProductosLista implements OnInit {
     const max = this.precioMax();
     const ord = this.ordenamiento();
 
-    if (cat) lista = lista.filter(p => p.categoria?.nombre === cat);
+    if (cat) lista = lista.filter(p => p.categorias?.some(c => c.nombre === cat));
     if (texto) lista = lista.filter(p =>
       p.nombre.toLowerCase().includes(texto) ||
       (p.descripcion && p.descripcion.toLowerCase().includes(texto))

@@ -16,8 +16,8 @@
       <nav class="breadcrumb">
         <a routerLink="/productos" class="breadcrumb-link">Catálogo</a>
         <span class="breadcrumb-sep">›</span>
-        @if (producto()!.categoria) {
-          <span class="breadcrumb-cat">{{ producto()!.categoria!.nombre }}</span>
+        @if ((producto()!.categorias?.length ?? 0) > 0) {
+          <span class="breadcrumb-cat">{{ producto()!.categorias![0].nombre }}</span>
           <span class="breadcrumb-sep">›</span>
         }
         <span class="breadcrumb-actual">{{ producto()!.nombre }}</span>
@@ -62,8 +62,12 @@
 
         <!-- Info -->
         <div class="detalle-info">
-          @if (producto()!.categoria) {
-            <span class="detalle-categoria">{{ producto()!.categoria!.nombre }}</span>
+          @if ((producto()!.categorias?.length ?? 0) > 0) {
+            <span class="detalle-categoria">
+              @for (cat of producto()!.categorias!; track cat.id) {
+                {{ cat.nombre }}{{ !$last ? ' · ' : '' }}
+              }
+            </span>
           }
           <h1 class="detalle-nombre">{{ producto()!.nombre }}</h1>
 
@@ -123,6 +127,11 @@
             <button class="btn-compartir" (click)="compartirPorWhatsapp()">
               Compartir producto →
             </button>
+            @if (authService.getRol() === 'admin') {
+              <button class="btn-editar-admin" (click)="abrirModalEditar()">
+                ✏️ Editar producto
+              </button>
+            }
           </div>
 
           @if (!producto()!.activo) {
@@ -151,8 +160,8 @@
                   }
                 </div>
                 <div class="rel-info">
-                  @if (r.categoria) {
-                    <span class="rel-cat">{{ r.categoria.nombre }}</span>
+                  @if ((r.categorias?.length ?? 0) > 0) {
+                    <span class="rel-cat">{{ r.categorias![0].nombre }}</span>
                   }
                   <p class="rel-nombre">{{ r.nombre }}</p>
                   <p class="rel-precio">{{ r.precio | currency:'COP':'symbol':'1.0-0' }}</p>
@@ -234,5 +243,92 @@
   }
 
 </div>
+
+@if (mostrarModalEditar()) {
+  <div class="modal-overlay" (click)="cerrarModalEditar()">
+    <div class="modal-panel" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h3 class="modal-titulo">Editar producto</h3>
+        <button class="modal-cerrar" (click)="cerrarModalEditar()">✕</button>
+      </div>
+
+      <form [formGroup]="editForm" (ngSubmit)="guardarEdicion()" class="modal-form">
+
+        <!-- Imagen -->
+        <div class="modal-imagen-upload" (click)="modalFileInput.click()">
+          @if (imagenModalPreview()) {
+            <img [src]="imagenModalPreview()!" class="modal-imagen-preview" alt="preview" />
+            <span class="modal-imagen-hint">Clic para cambiar foto</span>
+          } @else {
+            <span class="modal-imagen-placeholder">📷 Clic para subir foto</span>
+          }
+          <input #modalFileInput type="file" accept="image/jpeg,image/png,image/webp" style="display:none" (change)="onImagenModalSelected($event)" />
+        </div>
+
+        <!-- Nombre -->
+        <div class="modal-field">
+          <label class="modal-label">Nombre *</label>
+          <input class="modal-input" formControlName="nombre" type="text" placeholder="Nombre del producto" />
+        </div>
+
+        <!-- Descripción -->
+        <div class="modal-field">
+          <label class="modal-label">Descripción</label>
+          <textarea class="modal-textarea" formControlName="descripcion" rows="3" placeholder="Descripción del producto"></textarea>
+        </div>
+
+        <!-- Precios -->
+        <div class="modal-row-2">
+          <div class="modal-field">
+            <label class="modal-label">Precio *</label>
+            <input class="modal-input" formControlName="precio" type="number" min="0" />
+          </div>
+          <div class="modal-field">
+            <label class="modal-label">Precio sin descuento</label>
+            <input class="modal-input" formControlName="precioAnterior" type="number" min="0" placeholder="Opcional" />
+          </div>
+        </div>
+
+        <!-- Categoría y disponibilidad -->
+        <div class="modal-row-2">
+          <div class="modal-field">
+            <label class="modal-label">Categorías</label>
+            <div class="modal-checkboxes">
+              @for (cat of categoriasModal(); track cat.id) {
+                <label class="modal-check-label">
+                  <input
+                    type="checkbox"
+                    class="modal-check"
+                    [value]="cat.id"
+                    [checked]="editForm.get('categoriaIds')!.value.includes(cat.id)"
+                    (change)="toggleCategoriaModal(cat.id, $any($event.target).checked)"
+                  />
+                  {{ cat.nombre }}
+                </label>
+              }
+            </div>
+          </div>
+          <div class="modal-field modal-field-check">
+            <label class="modal-label">Disponibilidad</label>
+            <label class="modal-check-label">
+              <input type="checkbox" formControlName="activo" class="modal-check" />
+              Producto disponible
+            </label>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="modal-acciones">
+          <button type="button" class="btn-modal-cancelar" (click)="cerrarModalEditar()">Cancelar</button>
+          <button type="submit" class="btn-modal-guardar" [disabled]="editForm.invalid || guardandoEdicion()">
+            {{ guardandoEdicion() ? 'Guardando...' : 'Guardar cambios' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+}
 
 <app-footer />

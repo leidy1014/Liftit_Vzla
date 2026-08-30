@@ -17,14 +17,17 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const producto_entity_1 = require("./producto.entity");
+const categoria_entity_1 = require("../categorias/categoria.entity");
 let ProductosService = class ProductosService {
     productoRepository;
-    constructor(productoRepository) {
+    categoriaRepository;
+    constructor(productoRepository, categoriaRepository) {
         this.productoRepository = productoRepository;
+        this.categoriaRepository = categoriaRepository;
     }
     findAll() {
         return this.productoRepository.find({
-            relations: { categoria: true },
+            relations: { categorias: true },
             order: { orden: 'ASC', id: 'ASC' },
         });
     }
@@ -34,26 +37,28 @@ let ProductosService = class ProductosService {
     async findOne(id) {
         const producto = await this.productoRepository.findOne({
             where: { id },
-            relations: { categoria: true }
+            relations: { categorias: true },
         });
         if (!producto)
             throw new common_1.NotFoundException(`Producto #${id} no encontrado`);
         return producto;
     }
     async create(dto) {
-        const { categoriaId, ...resto } = dto;
+        const { categoriaIds, ...resto } = dto;
         const producto = this.productoRepository.create(resto);
-        if (categoriaId) {
-            producto.categoria = { id: categoriaId };
-        }
+        producto.categorias = categoriaIds?.length
+            ? await this.categoriaRepository.findBy({ id: (0, typeorm_2.In)(categoriaIds) })
+            : [];
         return this.productoRepository.save(producto);
     }
     async update(id, dto) {
-        const { categoriaId, ...resto } = dto;
+        const { categoriaIds, ...resto } = dto;
         const producto = await this.findOne(id);
         Object.assign(producto, resto);
-        if (categoriaId) {
-            producto.categoria = { id: categoriaId };
+        if (categoriaIds !== undefined) {
+            producto.categorias = categoriaIds.length
+                ? await this.categoriaRepository.findBy({ id: (0, typeorm_2.In)(categoriaIds) })
+                : [];
         }
         await this.productoRepository.save(producto);
         return this.findOne(id);
@@ -78,6 +83,8 @@ exports.ProductosService = ProductosService;
 exports.ProductosService = ProductosService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(producto_entity_1.Producto)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(categoria_entity_1.Categoria)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], ProductosService);
 //# sourceMappingURL=productos.service.js.map

@@ -29,7 +29,7 @@ let Producto = class Producto {
     stockMinimo;
     imagen;
     imagenes;
-    categoria;
+    categorias;
 };
 exports.Producto = Producto;
 __decorate([
@@ -97,10 +97,10 @@ __decorate([
     __metadata("design:type", Array)
 ], Producto.prototype, "imagenes", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => categoria_entity_1.Categoria, { nullable: true }),
-    (0, typeorm_1.JoinColumn)({ name: 'categoria_id' }),
-    __metadata("design:type", categoria_entity_1.Categoria)
-], Producto.prototype, "categoria", void 0);
+    (0, typeorm_1.ManyToMany)(() => categoria_entity_1.Categoria, { eager: false }),
+    (0, typeorm_1.JoinTable)({ name: 'producto_categorias' }),
+    __metadata("design:type", Array)
+], Producto.prototype, "categorias", void 0);
 exports.Producto = Producto = __decorate([
     (0, typeorm_1.Entity)('productos')
 ], Producto);

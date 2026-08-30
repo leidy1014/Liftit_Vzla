@@ -16,5 +16,5 @@ export declare class Producto {
     stockMinimo: number;
     imagen: string;
     imagenes: string[];
-    categoria: Categoria;
+    categorias: Categoria[];
 }

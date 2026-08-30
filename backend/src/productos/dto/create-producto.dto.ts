@@ -10,6 +10,6 @@ export class CreateProductoDto {
   referencia?: string;
   marca?: string;
   codigoBarras?: string;
-  categoriaId?: number;
+  categoriaIds?: number[];
   imagen?: string;
 }

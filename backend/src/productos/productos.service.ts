@@ -1,20 +1,22 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Producto } from './producto.entity';
-import { CreateProductoDto } from './dto/create-producto.dto';
 import { Categoria } from 'src/categorias/categoria.entity';
+import { CreateProductoDto } from './dto/create-producto.dto';
 
 @Injectable()
 export class ProductosService {
   constructor(
     @InjectRepository(Producto)
     private readonly productoRepository: Repository<Producto>,
+    @InjectRepository(Categoria)
+    private readonly categoriaRepository: Repository<Categoria>,
   ) {}
 
   findAll(): Promise<Producto[]> {
     return this.productoRepository.find({
-      relations: { categoria: true },
+      relations: { categorias: true },
       order: { orden: 'ASC', id: 'ASC' },
     });
   }
@@ -26,30 +28,31 @@ export class ProductosService {
   }
 
   async findOne(id: number): Promise<Producto> {
-    const producto = await this.productoRepository.findOne({ 
-      where: { id }, 
-      relations: { categoria: true } 
+    const producto = await this.productoRepository.findOne({
+      where: { id },
+      relations: { categorias: true },
     });
     if (!producto) throw new NotFoundException(`Producto #${id} no encontrado`);
     return producto;
   }
 
   async create(dto: CreateProductoDto): Promise<Producto> {
-    const { categoriaId, ...resto } = dto;
+    const { categoriaIds, ...resto } = dto;
     const producto = this.productoRepository.create(resto);
-    if (categoriaId) {
-      producto.categoria = { id: categoriaId } as Categoria;
-    }
+    producto.categorias = categoriaIds?.length
+      ? await this.categoriaRepository.findBy({ id: In(categoriaIds) })
+      : [];
     return this.productoRepository.save(producto);
   }
 
-
   async update(id: number, dto: Partial<CreateProductoDto>): Promise<Producto> {
-    const { categoriaId, ...resto } = dto;
+    const { categoriaIds, ...resto } = dto;
     const producto = await this.findOne(id);
     Object.assign(producto, resto);
-    if (categoriaId) {
-      producto.categoria = { id: categoriaId } as Categoria;
+    if (categoriaIds !== undefined) {
+      producto.categorias = categoriaIds.length
+        ? await this.categoriaRepository.findBy({ id: In(categoriaIds) })
+        : [];
     }
     await this.productoRepository.save(producto);
     return this.findOne(id);

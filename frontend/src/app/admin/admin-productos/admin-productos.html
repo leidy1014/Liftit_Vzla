@@ -28,39 +28,55 @@
                 <span class="upload-subtext">JPG, PNG o WEBP — máx. 5 MB</span>
               </div>
             }
-            <input
-              #fileInput
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              style="display: none"
-              (change)="onFileSelected($event)"
-            />
+            <input #fileInput type="file" accept="image/jpeg,image/png,image/webp" style="display:none" (change)="onFileSelected($event)" />
           </div>
 
-          @if (productoEditando()) {
-            <p class="form-section-label" style="margin-top: 1.5rem;">Fotos adicionales</p>
-            <div class="imagenes-extra">
+          <p class="form-section-label" style="margin-top: 1.5rem;">Fotos adicionales</p>
+          <div class="imagenes-extra">
+
+            @if (productoEditando()) {
               @for (img of productoEditando()!.imagenes ?? []; track img) {
                 <div class="imagen-extra-item">
                   <img [src]="getImagenUrl(img)" class="imagen-extra-thumb" alt="foto" />
                   <button type="button" class="btn-borrar-imagen" (click)="eliminarImagenExtra(img)" title="Eliminar foto">✕</button>
                 </div>
               }
+            }
+
+            @for (preview of imagenesNuevasPreview(); track $index) {
+              <div class="imagen-extra-item">
+                <img [src]="preview" class="imagen-extra-thumb" alt="nueva foto" />
+                <button type="button" class="btn-borrar-imagen" (click)="quitarImagenNueva($index)" title="Quitar foto">✕</button>
+              </div>
+            }
+
+            @if (productoEditando()) {
               <label class="btn-agregar-imagen" title="Agregar foto">
                 <span>＋</span>
-                <input type="file" accept="image/jpeg,image/png,image/webp" style="display:none" (change)="onImagenExtraSelected($event)" />
+                <input type="file" accept="image/jpeg,image/png,image/webp" multiple style="display:none" (change)="onImagenExtraSelected($event)" />
               </label>
-            </div>
-          }
+            } @else {
+              <label class="btn-agregar-imagen" title="Agregar foto">
+                <span>＋</span>
+                <input type="file" accept="image/jpeg,image/png,image/webp" multiple style="display:none" (change)="onImagenNuevaSelected($event)" />
+              </label>
+            }
+          </div>
         </div>
 
         <!-- Columna derecha: campos -->
         <div class="form-col-campos">
           <p class="form-section-label">Información</p>
-          <mat-form-field appearance="outline" class="field-full">
-            <mat-label>Nombre del producto *</mat-label>
-            <input matInput formControlName="nombre" />
-          </mat-form-field>
+          <div class="form-row-2">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre del producto *</mat-label>
+              <input matInput formControlName="nombre" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>SKU / Referencia</mat-label>
+              <input matInput formControlName="referencia" placeholder="Ej: 060087" />
+            </mat-form-field>
+          </div>
 
           <mat-form-field appearance="outline" class="field-full">
             <mat-label>Descripción</mat-label>
@@ -69,9 +85,8 @@
 
           <div class="form-row-2">
             <mat-form-field appearance="outline">
-              <mat-label>Categoría</mat-label>
-              <mat-select formControlName="categoriaId">
-                <mat-option [value]="null">Sin categoría</mat-option>
+              <mat-label>Categorías</mat-label>
+              <mat-select formControlName="categoriaIds" multiple>
                 @for (cat of categorias(); track cat.id) {
                   <mat-option [value]="cat.id">{{ cat.nombre }}</mat-option>
                 }
@@ -114,71 +129,62 @@
   </div>
 }
 
-<div class="admin-table-container">
-  <table mat-table [dataSource]="productos()" cdkDropList (cdkDropListDropped)="drop($event)" style="width: 100%;">
+<!-- Buscador -->
+<div class="productos-buscador">
+  <span class="buscador-icon">🔍</span>
+  <input
+    class="buscador-input"
+    type="text"
+    placeholder="Buscar por nombre o SKU..."
+    [value]="busqueda()"
+    (input)="busqueda.set($any($event.target).value)"
+  />
+  @if (busqueda()) {
+    <button class="buscador-limpiar" (click)="busqueda.set('')">✕</button>
+  }
+  <span class="buscador-total">{{ productosFiltrados.length }} producto{{ productosFiltrados.length !== 1 ? 's' : '' }}</span>
+</div>
 
-    <ng-container matColumnDef="handle">
-      <th mat-header-cell *matHeaderCellDef></th>
-      <td mat-cell *matCellDef="let p" class="drag-handle-cell" cdkDragHandle>
-        <i class="fas fa-grip-vertical drag-handle-icon"></i>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="imagen">
-      <th mat-header-cell *matHeaderCellDef>Foto</th>
-      <td mat-cell *matCellDef="let p">
+<!-- Cuadrícula de productos -->
+<div class="productos-grid">
+  @for (p of productosFiltrados; track p.id) {
+    <div class="prod-card" (click)="editar(p)">
+      <div class="prod-card-img">
         @if (p.imagen) {
-          <img [src]="getImagenUrl(p.imagen)" class="tabla-thumbnail" alt="foto" />
+          <img [src]="getImagenUrl(p.imagen)" [alt]="p.nombre" class="prod-card-foto" />
         } @else {
-          <div class="tabla-thumbnail-placeholder">✿</div>
+          <div class="prod-card-placeholder">✿</div>
         }
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="nombre">
-      <th mat-header-cell *matHeaderCellDef>Nombre</th>
-      <td mat-cell *matCellDef="let p">{{ p.nombre }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="precio">
-      <th mat-header-cell *matHeaderCellDef>Precio</th>
-      <td mat-cell *matCellDef="let p">
-        <div class="precio-tabla">
-          <span class="precio-actual">${{ p.precio | number:'1.0-0' }}</span>
+        <span [class]="p.activo ? 'prod-badge-ok' : 'prod-badge-no'">
+          {{ p.activo ? 'Disponible' : 'Agotado' }}
+        </span>
+      </div>
+      <div class="prod-card-info">
+        @if (p.referencia) {
+          <span class="prod-card-ref">[{{ p.referencia }}]</span>
+        }
+        <p class="prod-card-nombre">{{ p.nombre }}</p>
+        <div class="prod-card-precios">
+          <span class="prod-card-precio">${{ p.precio | number:'1.0-0' }}</span>
           @if (p.precioAnterior) {
-            <span class="precio-anterior-tabla">${{ p.precioAnterior | number:'1.0-0' }}</span>
+            <span class="prod-card-precio-ant">${{ p.precioAnterior | number:'1.0-0' }}</span>
           }
         </div>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="disponible">
-      <th mat-header-cell *matHeaderCellDef>Estado</th>
-      <td mat-cell *matCellDef="let p">
-        <span [class]="p.activo ? 'badge-disponible' : 'badge-nodisponible'">
-          {{ p.activo ? 'Disponible' : 'No disponible' }}
-        </span>
-      </td>
-    </ng-container>
-
-    <ng-container matColumnDef="categoria">
-      <th mat-header-cell *matHeaderCellDef>Categoría</th>
-      <td mat-cell *matCellDef="let p">{{ p.categoria?.nombre || '—' }}</td>
-    </ng-container>
-
-    <ng-container matColumnDef="acciones">
-      <th mat-header-cell *matHeaderCellDef>Acciones</th>
-      <td mat-cell *matCellDef="let p">
-        <button mat-icon-button color="primary" (click)="editar(p)">
-          <i class="fas fa-edit"></i>
+        @if ((p.categorias?.length ?? 0) > 0) {
+          <span class="prod-card-cat">{{ p.categorias![0].nombre }}{{ (p.categorias!.length > 1) ? ' +' + (p.categorias!.length - 1) : '' }}</span>
+        }
+      </div>
+      <div class="prod-card-acciones">
+        <button class="prod-btn-eliminar" (click)="eliminar(p.id); $event.stopPropagation()">
+          <i class="fas fa-trash"></i> Eliminar
         </button>
-        <button mat-icon-button color="warn" (click)="eliminar(p.id)">
-          <i class="fas fa-trash"></i>
-        </button>
-      </td>
-    </ng-container>
+      </div>
+    </div>
+  }
 
-    <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-    <tr mat-row *matRowDef="let row; columns: columnas;" cdkDrag [cdkDragData]="row"></tr>
-  </table>
+  @if (productosFiltrados.length === 0) {
+    <div class="productos-empty">
+      <p>No se encontraron productos{{ busqueda() ? ' para "' + busqueda() + '"' : '' }}.</p>
+    </div>
+  }
 </div>

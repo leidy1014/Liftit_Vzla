@@ -13,7 +13,7 @@ class CreateProductoDto {
     referencia;
     marca;
     codigoBarras;
-    categoriaId;
+    categoriaIds;
     imagen;
 }
 exports.CreateProductoDto = CreateProductoDto;

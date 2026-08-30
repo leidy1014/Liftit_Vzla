@@ -1,9 +1,11 @@
 import { Repository } from 'typeorm';
 import { Producto } from './producto.entity';
+import { Categoria } from "../categorias/categoria.entity";
 import { CreateProductoDto } from './dto/create-producto.dto';
 export declare class ProductosService {
     private readonly productoRepository;
-    constructor(productoRepository: Repository<Producto>);
+    private readonly categoriaRepository;
+    constructor(productoRepository: Repository<Producto>, categoriaRepository: Repository<Categoria>);
     findAll(): Promise<Producto[]>;
     reordenar(ids: number[]): Promise<void>;
     findOne(id: number): Promise<Producto>;

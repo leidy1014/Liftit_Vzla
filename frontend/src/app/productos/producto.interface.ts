@@ -18,5 +18,5 @@ export interface Producto {
   activo: boolean;
   imagen?: string;
   imagenes?: string[];
-  categoria?: Categoria;
+  categorias?: Categoria[];
 }

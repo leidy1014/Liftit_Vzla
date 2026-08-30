@@ -1,5 +1,5 @@
 import { Categoria } from '../categorias/categoria.entity';
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn  } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToMany, JoinTable } from 'typeorm';
 
 @Entity('productos')
 export class Producto {
@@ -51,8 +51,8 @@ export class Producto {
   @Column('simple-json', { nullable: true, default: '[]' })
   imagenes: string[];
 
-  @ManyToOne(() => Categoria, { nullable: true })
-  @JoinColumn({ name: 'categoria_id' })
-  categoria: Categoria;
+  @ManyToMany(() => Categoria, { eager: false })
+  @JoinTable({ name: 'producto_categorias' })
+  categorias: Categoria[];
 
 }

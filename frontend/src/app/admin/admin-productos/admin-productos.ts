@@ -1,8 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
-import { MatTableModule } from '@angular/material/table';
+import { forkJoin } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -18,7 +17,7 @@ import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-admin-productos',
-  imports: [DecimalPipe, DragDropModule, ReactiveFormsModule, MatTableModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, CdkTextareaAutosize],
+  imports: [DecimalPipe, ReactiveFormsModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, CdkTextareaAutosize],
   templateUrl: './admin-productos.html',
   styleUrl: './admin-productos.css',
 })
@@ -27,12 +26,22 @@ export class AdminProductos implements OnInit {
   productoEditando = signal<Producto | null>(null);
   categorias = signal<Categoria[]>([]);
   mostrarFormulario = signal(false);
-  columnas = ['handle', 'imagen', 'nombre', 'precio', 'disponible', 'categoria', 'acciones'];
-
+  busqueda = signal('');
   imagenFile = signal<File | null>(null);
   imagenPreview = signal<string | null>(null);
+  imagenesNuevasFiles = signal<File[]>([]);
+  imagenesNuevasPreview = signal<string[]>([]);
 
   form: FormGroup;
+
+  get productosFiltrados(): Producto[] {
+    const q = this.busqueda().toLowerCase().trim();
+    if (!q) return this.productos();
+    return this.productos().filter(p =>
+      p.nombre.toLowerCase().includes(q) ||
+      (p.referencia ?? '').toLowerCase().includes(q)
+    );
+  }
 
   constructor(
     private productosService: ProductosService,
@@ -43,11 +52,12 @@ export class AdminProductos implements OnInit {
   ) {
     this.form = this.fb.group({
       nombre: ['', Validators.required],
+      referencia: [''],
       descripcion: [''],
       precio: [0, [Validators.required, Validators.min(0)]],
       precioAnterior: [null],
       activo: [true],
-      categoriaId: [null],
+      categoriaIds: [[]],
     });
   }
 
@@ -71,7 +81,9 @@ export class AdminProductos implements OnInit {
       this.productoEditando.set(null);
       this.imagenFile.set(null);
       this.imagenPreview.set(null);
-      this.form.reset({ precio: 0, precioAnterior: null, activo: true });
+      this.imagenesNuevasFiles.set([]);
+      this.imagenesNuevasPreview.set([]);
+      this.form.reset({ precio: 0, precioAnterior: null, activo: true, categoriaIds: [] });
     }
   }
 
@@ -79,15 +91,19 @@ export class AdminProductos implements OnInit {
     this.productoEditando.set(producto);
     this.form.patchValue({
       nombre: producto.nombre,
+      referencia: producto.referencia ?? '',
       descripcion: producto.descripcion,
       precio: producto.precio,
       precioAnterior: producto.precioAnterior ?? null,
       activo: producto.activo,
-      categoriaId: producto.categoria?.id ?? null,
+      categoriaIds: producto.categorias?.map(c => c.id) ?? [],
     });
     this.imagenFile.set(null);
     this.imagenPreview.set(producto.imagen ? `${environment.uploadsUrl}/${producto.imagen}` : null);
+    this.imagenesNuevasFiles.set([]);
+    this.imagenesNuevasPreview.set([]);
     this.mostrarFormulario.set(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   onFileSelected(event: Event) {
@@ -125,20 +141,56 @@ export class AdminProductos implements OnInit {
         this.resetFormulario();
       });
     } else {
-      this.productosService.create(datos).subscribe(() => {
-        this.toast.exito('Producto creado');
-        this.cargarProductos();
-        this.resetFormulario();
+      this.productosService.create(datos).subscribe((creado) => {
+        const extras = this.imagenesNuevasFiles();
+        if (extras.length > 0) {
+          forkJoin(extras.map(f => this.productosService.agregarImagen(creado.id, f))).subscribe({
+            next: () => {
+              this.toast.exito('Producto creado con imágenes');
+              this.cargarProductos();
+              this.resetFormulario();
+            },
+            error: () => {
+              this.toast.exito('Producto creado (algunas imágenes fallaron)');
+              this.cargarProductos();
+              this.resetFormulario();
+            },
+          });
+        } else {
+          this.toast.exito('Producto creado');
+          this.cargarProductos();
+          this.resetFormulario();
+        }
       });
     }
   }
 
   private resetFormulario() {
-    this.form.reset({ precio: 0, precioAnterior: null, activo: true });
+    this.form.reset({ precio: 0, precioAnterior: null, activo: true, categoriaIds: [] });
     this.productoEditando.set(null);
     this.imagenFile.set(null);
     this.imagenPreview.set(null);
+    this.imagenesNuevasFiles.set([]);
+    this.imagenesNuevasPreview.set([]);
     this.mostrarFormulario.set(false);
+  }
+
+  onImagenNuevaSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const files = Array.from(input.files ?? []);
+    if (!files.length) return;
+    files.forEach(file => {
+      this.imagenesNuevasFiles.update(arr => [...arr, file]);
+      const reader = new FileReader();
+      reader.onload = () => this.imagenesNuevasPreview.update(arr => [...arr, reader.result as string]);
+      reader.readAsDataURL(file);
+    });
+    input.value = '';
+  }
+
+  quitarImagenNueva(index: number) {
+    this.imagenesNuevasFiles.update(arr => arr.filter((_, i) => i !== index));
+    this.imagenesNuevasPreview.update(arr => arr.filter((_, i) => i !== index));
   }
 
   eliminar(id: number) {
@@ -166,25 +218,18 @@ export class AdminProductos implements OnInit {
 
   onImagenExtraSelected(event: Event) {
     const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
+    const files = Array.from(input.files ?? []);
     const editando = this.productoEditando();
-    if (!file || !editando) return;
-    this.productosService.agregarImagen(editando.id, file).subscribe({
-      next: (p) => {
-        this.productoEditando.set(p);
-        this.toast.exito('Imagen agregada');
+    if (!files.length || !editando) return;
+    forkJoin(files.map(f => this.productosService.agregarImagen(editando.id, f))).subscribe({
+      next: (resultados) => {
+        this.productoEditando.set(resultados[resultados.length - 1]);
+        this.toast.exito('Imagen(es) agregada(s)');
         this.cargarProductos();
       },
       error: () => this.toast.error('Error al subir la imagen'),
     });
     input.value = '';
-  }
-
-  drop(event: CdkDragDrop<Producto[]>) {
-    const lista = [...this.productos()];
-    moveItemInArray(lista, event.previousIndex, event.currentIndex);
-    this.productos.set(lista);
-    this.productosService.reordenar(lista.map(p => p.id)).subscribe();
   }
 
   eliminarImagenExtra(filename: string) {

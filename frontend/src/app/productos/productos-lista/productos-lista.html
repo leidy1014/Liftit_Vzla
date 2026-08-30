@@ -155,8 +155,8 @@
           </div>
 
           <div class="producto-info">
-            @if (producto.categoria) {
-              <span class="producto-categoria">{{ producto.categoria.nombre }}</span>
+            @if ((producto.categorias?.length ?? 0) > 0) {
+              <span class="producto-categoria">{{ producto.categorias![0].nombre }}</span>
             }
             <h3 class="producto-nombre">{{ producto.nombre }}</h3>
             @if ((producto.totalResenas ?? 0) > 0) {

@@ -11,13 +11,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Categoria = void 0;
 const typeorm_1 = require("typeorm");
-const producto_entity_1 = require("../productos/producto.entity");
 let Categoria = class Categoria {
     id;
     nombre;
     descripcion;
     activo;
-    productos;
 };
 exports.Categoria = Categoria;
 __decorate([
@@ -36,10 +34,6 @@ __decorate([
     (0, typeorm_1.Column)({ default: true }),
     __metadata("design:type", Boolean)
 ], Categoria.prototype, "activo", void 0);
-__decorate([
-    (0, typeorm_1.OneToMany)(() => producto_entity_1.Producto, (producto) => producto.categoria),
-    __metadata("design:type", Array)
-], Categoria.prototype, "productos", void 0);
 exports.Categoria = Categoria = __decorate([
     (0, typeorm_1.Entity)('categorias')
 ], Categoria);

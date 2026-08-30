@@ -272,24 +272,215 @@
   transition: transform 250ms ease;
 }
 
-/* === TABLA — MINIATURAS === */
-.tabla-thumbnail {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  object-fit: cover;
-  border: 1px solid var(--cg-border);
+/* === BUSCADOR === */
+.productos-buscador {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+  background: white;
+  border: 1.5px solid var(--cg-border);
+  border-radius: 10px;
+  padding: 0.55rem 1rem;
 }
 
-.tabla-thumbnail-placeholder {
-  width: 44px;
-  height: 44px;
-  border-radius: 8px;
-  background: var(--cg-pink-light);
+.buscador-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.buscador-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: var(--cg-font-body);
+  font-size: 0.9rem;
+  color: var(--cg-dark);
+  background: transparent;
+}
+
+.buscador-limpiar {
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  color: var(--cg-text-muted);
+  cursor: pointer;
+  padding: 0 0.2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.buscador-limpiar:hover { color: var(--cg-dark); }
+
+.buscador-total {
+  font-size: 0.78rem;
+  color: var(--cg-text-muted);
+  white-space: nowrap;
+  border-left: 1px solid var(--cg-border);
+  padding-left: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* === CUADRÍCULA DE PRODUCTOS === */
+.productos-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 1100px) {
+  .productos-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .productos-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .productos-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+}
+
+/* === TARJETA DE PRODUCTO === */
+.prod-card {
+  background: white;
+  border: 1.5px solid var(--cg-border);
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s, transform 0.18s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.prod-card:hover {
+  border-color: var(--cg-magenta);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+  transform: translateY(-3px);
+}
+
+.prod-card-img {
+  position: relative;
+  height: 160px;
+  background: #F4F4F4;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.1rem;
-  color: var(--cg-pink);
-  border: 1px solid var(--cg-border);
+}
+
+.prod-card-foto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.prod-card-placeholder {
+  font-size: 2.5rem;
+  color: #CCC;
+}
+
+.prod-badge-ok,
+.prod-badge-no {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.prod-badge-ok {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.prod-badge-no {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+.prod-card-info {
+  padding: 0.75rem 0.9rem 0.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.prod-card-ref {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--cg-text-muted);
+  text-transform: uppercase;
+}
+
+.prod-card-nombre {
+  font-family: var(--cg-font-heading);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--cg-dark);
+  text-transform: uppercase;
+  line-height: 1.2;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.prod-card-precios {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin-top: 0.15rem;
+}
+
+.prod-card-precio {
+  font-family: var(--cg-font-heading);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--cg-magenta);
+}
+
+.prod-card-precio-ant {
+  font-size: 0.75rem;
+  color: var(--cg-text-muted);
+  text-decoration: line-through;
+}
+
+.prod-card-cat {
+  font-size: 0.68rem;
+  color: var(--cg-text-muted);
+  margin-top: 0.1rem;
+}
+
+.prod-card-acciones {
+  display: flex;
+  border-top: 1px solid var(--cg-border);
+}
+
+.prod-btn-eliminar {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 0.55rem;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #c62828;
+  transition: background 0.15s;
+}
+
+.prod-btn-eliminar:hover { background: #fce4ec; }
+
+/* === SIN RESULTADOS === */
+.productos-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: var(--cg-text-muted);
+  font-size: 0.9rem;
 }

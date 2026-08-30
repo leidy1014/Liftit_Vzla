@@ -3,7 +3,7 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { forkJoin } from 'rxjs';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProductosService } from '../productos';
 import { CarritoService } from '../../carrito/carrito.service';
 import { Navbar } from '../../shared/navbar/navbar';
@@ -13,11 +13,13 @@ import { Producto } from '../producto.interface';
 import { Resena } from '../../resenas/resena.interface';
 import { ResenasService } from '../../resenas/resenas.service';
 import { AuthService } from '../../auth/auth';
+import { Categorias } from '../../categorias/categorias';
+import { Categoria } from '../../categorias/categoria.interface';
 import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-producto-detalle',
-    imports: [CurrencyPipe, DatePipe, RouterModule, FormsModule, Navbar, Footer],
+    imports: [CurrencyPipe, DatePipe, RouterModule, FormsModule, ReactiveFormsModule, Navbar, Footer],
     templateUrl: './producto-detalle.html',
     styleUrl: './producto-detalle.css',
 })
@@ -36,6 +38,13 @@ export class ProductoDetalle implements OnInit {
     enviandoResena = signal(false);
     yaReseno = signal(false);
     estrellasHover = signal(0);
+
+    mostrarModalEditar = signal(false);
+    categoriasModal = signal<Categoria[]>([]);
+    imagenModalFile = signal<File | null>(null);
+    imagenModalPreview = signal<string | null>(null);
+    guardandoEdicion = signal(false);
+    editForm!: FormGroup;
 
     get descripcionCorta(): string {
         const desc = this.producto()?.descripcion ?? '';
@@ -60,41 +69,64 @@ export class ProductoDetalle implements OnInit {
         private toast: ToastService,
         private titleService: Title,
         private metaService: Meta,
-    ) {}
+        private fb: FormBuilder,
+        private categoriasService: Categorias,
+    ) {
+        this.editForm = this.fb.group({
+            nombre: ['', Validators.required],
+            descripcion: [''],
+            precio: [0, [Validators.required, Validators.min(0)]],
+            precioAnterior: [null],
+            activo: [true],
+            categoriaIds: [[]],
+        });
+    }
 
     ngOnInit() {
-        const id = Number(this.route.snapshot.paramMap.get('id'));
-        forkJoin([
-            this.productosService.getById(id),
-            this.resenasService.getByProducto(id),
-            this.productosService.getAll(),
-        ]).subscribe({
-            next: ([p, resenas, todos]) => {
-                this.producto.set(p);
-                this.imagenActiva.set(p.imagen ?? null);
-                this.resenas.set(resenas);
-                this.cargando.set(false);
+        this.route.paramMap.subscribe(params => {
+            const id = Number(params.get('id'));
+            this.cargando.set(true);
+            this.producto.set(null);
+            this.relacionados.set([]);
+            this.resenas.set([]);
+            this.cantidad.set(1);
+            this.descripcionExpandida.set(false);
+            this.yaReseno.set(false);
 
-                const rel = todos
-                    .filter(x => x.id !== id && x.categoria?.id === p.categoria?.id && x.activo)
-                    .slice(0, 4);
-                this.relacionados.set(rel);
+            forkJoin([
+                this.productosService.getById(id),
+                this.resenasService.getByProducto(id),
+                this.productosService.getAll(),
+            ]).subscribe({
+                next: ([p, resenas, todos]) => {
+                    this.producto.set(p);
+                    this.imagenActiva.set(p.imagen ?? null);
+                    this.resenas.set(resenas);
+                    this.cargando.set(false);
 
-                const desc = p.descripcion
-                    ? p.descripcion.slice(0, 155).trimEnd() + '...'
-                    : `${p.nombre} — Equipamiento deportivo profesional. Cómpralo en Liftit Fitness Colombia.`;
-                const imagen = p.imagen
-                    ? `${environment.uploadsUrl}/${p.imagen}`
-                    : 'https://liftitfitnesscol.com/hero-banner.jpg.png';
+                    const rel = todos
+                        .filter(x => x.id !== id && x.activo &&
+                            x.categorias?.some(xc => p.categorias?.some(pc => pc.id === xc.id))
+                        )
+                        .slice(0, 4);
+                    this.relacionados.set(rel);
 
-                this.titleService.setTitle(`${p.nombre} | Liftit Fitness`);
-                this.metaService.updateTag({ name: 'description', content: desc });
-                this.metaService.updateTag({ property: 'og:title', content: `${p.nombre} | Liftit Fitness` });
-                this.metaService.updateTag({ property: 'og:description', content: desc });
-                this.metaService.updateTag({ property: 'og:image', content: imagen });
-                this.metaService.updateTag({ property: 'og:url', content: `https://liftitfitnesscol.com/productos/${p.id}` });
-            },
-            error: () => { this.cargando.set(false); this.router.navigate(['/productos']); },
+                    const desc = p.descripcion
+                        ? p.descripcion.slice(0, 155).trimEnd() + '...'
+                        : `${p.nombre} — Equipamiento deportivo profesional. Cómpralo en Liftit Fitness Colombia.`;
+                    const imagen = p.imagen
+                        ? `${environment.uploadsUrl}/${p.imagen}`
+                        : 'https://liftitfitnesscol.com/hero-banner.jpg.png';
+
+                    this.titleService.setTitle(`${p.nombre} | Liftit Fitness`);
+                    this.metaService.updateTag({ name: 'description', content: desc });
+                    this.metaService.updateTag({ property: 'og:title', content: `${p.nombre} | Liftit Fitness` });
+                    this.metaService.updateTag({ property: 'og:description', content: desc });
+                    this.metaService.updateTag({ property: 'og:image', content: imagen });
+                    this.metaService.updateTag({ property: 'og:url', content: `https://liftitfitnesscol.com/productos/${p.id}` });
+                },
+                error: () => { this.cargando.set(false); this.router.navigate(['/productos']); },
+            });
         });
     }
 
@@ -175,6 +207,83 @@ export class ProductoDetalle implements OnInit {
             : '';
         const msg = `¡Hola! Te comparto este producto de *Liftit Fitness* 💪\n\n*${p.nombre}*${descuento}\n💰 Precio: $${precio} COP\n\nToca el enlace para ver la descripción completa y realizar tu pedido:\n👉 ${url}`;
         window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    abrirModalEditar() {
+        const p = this.producto();
+        if (!p) return;
+        this.editForm.patchValue({
+            nombre: p.nombre,
+            descripcion: p.descripcion ?? '',
+            precio: p.precio,
+            precioAnterior: p.precioAnterior ?? null,
+            activo: p.activo,
+            categoriaIds: p.categorias?.map(c => c.id) ?? [],
+        });
+        this.imagenModalFile.set(null);
+        this.imagenModalPreview.set(p.imagen ? `${environment.uploadsUrl}/${p.imagen}` : null);
+        if (!this.categoriasModal().length) {
+            this.categoriasService.getAll().subscribe(cats => this.categoriasModal.set(cats));
+        }
+        this.mostrarModalEditar.set(true);
+    }
+
+    cerrarModalEditar() {
+        this.mostrarModalEditar.set(false);
+    }
+
+    toggleCategoriaModal(id: number, checked: boolean) {
+        const control = this.editForm.get('categoriaIds')!;
+        const actuales: number[] = control.value ?? [];
+        control.setValue(
+            checked ? [...actuales, id] : actuales.filter(v => v !== id)
+        );
+    }
+
+    onImagenModalSelected(event: Event) {
+        const input = event.target as HTMLInputElement;
+        const file = input.files?.[0];
+        if (!file) return;
+        this.imagenModalFile.set(file);
+        const reader = new FileReader();
+        reader.onload = () => this.imagenModalPreview.set(reader.result as string);
+        reader.readAsDataURL(file);
+    }
+
+    guardarEdicion() {
+        if (this.editForm.invalid) return;
+        this.guardandoEdicion.set(true);
+        const file = this.imagenModalFile();
+        if (file) {
+            this.productosService.uploadImagen(file).subscribe({
+                next: ({ filename }) => this.guardarEdicionConImagen(filename),
+                error: () => {
+                    this.toast.error('Error al subir la imagen');
+                    this.guardandoEdicion.set(false);
+                },
+            });
+        } else {
+            this.guardarEdicionConImagen(null);
+        }
+    }
+
+    private guardarEdicionConImagen(imagen: string | null) {
+        const p = this.producto();
+        if (!p) return;
+        const datos: any = { ...this.editForm.value };
+        if (imagen) datos.imagen = imagen;
+        this.productosService.update(p.id, datos).subscribe({
+            next: (actualizado) => {
+                this.producto.set(actualizado);
+                this.toast.exito('Producto actualizado');
+                this.cerrarModalEditar();
+                this.guardandoEdicion.set(false);
+            },
+            error: () => {
+                this.toast.error('Error al actualizar el producto');
+                this.guardandoEdicion.set(false);
+            },
+        });
     }
 
     getImagenUrl(imagen: string): string {
