@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: cherry-glam-backend
+    name: liftit-vzla-backend
     runtime: node
     plan: free
     rootDir: backend
@@ -10,16 +10,14 @@ services:
       - key: DB_HOST
         sync: false
       - key: DB_PORT
-        value: "5432"
+        value: "6543"
       - key: DB_USER
         sync: false
       - key: DB_PASSWORD
         sync: false
       - key: DB_NAME
         sync: false
-      - key: DB_SSL
-        value: "true"
       - key: JWT_SECRET
-        generateValue: true
-      - key: FRONTEND_URL
         sync: false
+      - key: PORT
+        value: "3000"
