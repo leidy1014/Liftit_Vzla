@@ -8,8 +8,8 @@ export interface Producto {
   calificacionPromedio?: number;
   totalResenas?: number;
   descripcion: string;
-  precio: number;
-  precioAnterior?: number;
+  precioDolar: number;
+  precioBolivares?: number;
   costo: number;
   stock: number;
   stockMinimo: number;

@@ -1,15 +1,15 @@
 services:
   postgres:
     image: postgres:16
-    container_name: catalogo_liftit_db
+    container_name: catalogo_vzla_db
     environment:
       POSTGRES_USER: liftit_admin
       POSTGRES_PASSWORD: liftit1234
-      POSTGRES_DB: catalogo_liftit
+      POSTGRES_DB: catalogo_vzla
     ports:
-      - '5433:5432'
+      - '5434:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_vzla_data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
+  postgres_vzla_data:

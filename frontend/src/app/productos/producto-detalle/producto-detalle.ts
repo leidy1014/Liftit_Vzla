@@ -1,5 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CurrencyPipe, DatePipe, Location } from '@angular/common';
+import { CurrencyPipe, DatePipe, DecimalPipe, Location } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -18,7 +18,7 @@ import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-producto-detalle',
-    imports: [CurrencyPipe, DatePipe, RouterModule, FormsModule, ReactiveFormsModule, Navbar, Footer],
+    imports: [CurrencyPipe, DatePipe, DecimalPipe, RouterModule, FormsModule, ReactiveFormsModule, Navbar, Footer],
     templateUrl: './producto-detalle.html',
     styleUrl: './producto-detalle.css',
 })
@@ -75,8 +75,8 @@ export class ProductoDetalle implements OnInit {
         this.editForm = this.fb.group({
             nombre: ['', Validators.required],
             descripcion: [''],
-            precio: [0, [Validators.required, Validators.min(0)]],
-            precioAnterior: [null],
+            precioDolar: [0, [Validators.required, Validators.min(0)]],
+            precioBolivares: [null],
             activo: [true],
             categoriaIds: [[]],
         });
@@ -117,7 +117,7 @@ export class ProductoDetalle implements OnInit {
 
                     const desc = p.descripcion
                         ? p.descripcion.slice(0, 155).trimEnd() + '...'
-                        : `${p.nombre} — Equipamiento deportivo profesional. Cómpralo en Liftit Fitness Colombia.`;
+                        : `${p.nombre} — Equipamiento deportivo profesional. Cómpralo en Liftit Fitness Venezuela.`;
                     const imagen = p.imagen
                         ? `${environment.uploadsUrl}/${p.imagen}`
                         : 'https://liftitfitnesscol.com/hero-banner.jpg.png';
@@ -197,20 +197,19 @@ export class ProductoDetalle implements OnInit {
     pedirPorWhatsapp() {
         const p = this.producto();
         if (!p) return;
-        const precio = (p.precio * this.cantidad()).toLocaleString('es-CO');
-        const msg = `Hola! Deseo realizar este pedido\n\n*${p.nombre}*\nCantidad: ${this.cantidad()}\nPrecio: $${precio}\n\n¿Está disponible?`;
-        window.open(`https://wa.me/573213324759?text=${encodeURIComponent(msg)}`, '_blank');
+        const precioUsd = (p.precioDolar * this.cantidad()).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const bs = p.precioBolivares ? `\nBs. ${(p.precioBolivares * this.cantidad()).toLocaleString('es-VE')}` : '';
+        const msg = `Hola! Deseo realizar este pedido\n\n*${p.nombre}*\nCantidad: ${this.cantidad()}\nPrecio: $${precioUsd} USD${bs}\n\n¿Está disponible?`;
+        window.open(`https://wa.me/584128349722?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     compartirPorWhatsapp() {
         const p = this.producto();
         if (!p) return;
         const url = `https://liftitfitnesscol.com/productos/${p.slug ?? p.id}`;
-        const precio = p.precio.toLocaleString('es-CO');
-        const descuento = p.precioAnterior
-            ? `\n🏷️ Antes: $${p.precioAnterior.toLocaleString('es-CO')} COP`
-            : '';
-        const msg = `¡Hola! Te comparto este producto de *Liftit Fitness* 💪\n\n*${p.nombre}*${descuento}\n💰 Precio: $${precio} COP\n\nToca el enlace para ver la descripción completa y realizar tu pedido:\n👉 ${url}`;
+        const precioUsd = p.precioDolar.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const bs = p.precioBolivares ? `\n🏷️ Bs. ${p.precioBolivares.toLocaleString('es-VE')}` : '';
+        const msg = `¡Hola! Te comparto este producto de *Liftit Fitness Venezuela* 💪\n\n*${p.nombre}*${bs}\n💰 Precio: $${precioUsd} USD\n\nToca el enlace para ver la descripción completa y realizar tu pedido:\n👉 ${url}`;
         window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
@@ -220,8 +219,8 @@ export class ProductoDetalle implements OnInit {
         this.editForm.patchValue({
             nombre: p.nombre,
             descripcion: p.descripcion ?? '',
-            precio: p.precio,
-            precioAnterior: p.precioAnterior ?? null,
+            precioDolar: p.precioDolar,
+            precioBolivares: p.precioBolivares ?? null,
             activo: p.activo,
             categoriaIds: p.categorias?.map(c => c.id) ?? [],
         });

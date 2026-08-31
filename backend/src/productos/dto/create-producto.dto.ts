@@ -1,8 +1,8 @@
 export class CreateProductoDto {
   nombre: string;
   descripcion?: string;
-  precio: number;
-  precioAnterior?: number;
+  precioDolar: number;
+  precioBolivares?: number;
   activo?: boolean;
   costo?: number;
   stock?: number;

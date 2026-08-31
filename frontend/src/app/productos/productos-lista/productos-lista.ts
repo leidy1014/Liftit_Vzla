@@ -60,10 +60,10 @@ export class ProductosLista implements OnInit {
       p.nombre.toLowerCase().includes(texto) ||
       (p.descripcion && p.descripcion.toLowerCase().includes(texto))
     );
-    if (min !== null) lista = lista.filter(p => p.precio >= min);
-    if (max !== null) lista = lista.filter(p => p.precio <= max);
-    if (ord === 'asc') lista = [...lista].sort((a, b) => a.precio - b.precio);
-    else if (ord === 'desc') lista = [...lista].sort((a, b) => b.precio - a.precio);
+    if (min !== null) lista = lista.filter(p => p.precioDolar >= min);
+    if (max !== null) lista = lista.filter(p => p.precioDolar <= max);
+    if (ord === 'asc') lista = [...lista].sort((a, b) => a.precioDolar - b.precioDolar);
+    else if (ord === 'desc') lista = [...lista].sort((a, b) => b.precioDolar - a.precioDolar);
 
     return lista;
   });

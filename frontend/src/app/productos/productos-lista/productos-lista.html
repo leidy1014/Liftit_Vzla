@@ -15,9 +15,10 @@
 <div class="medios-pago-bar">
   <span class="medios-label">Paga aquí con</span>
   <div class="medios-logos">
-    <img src="/logo-boton-bancolombia.png" alt="Bancolombia" class="medio-logo-img" />
-    <img src="/logo-boton-breb.png"        alt="Bre-b"        class="medio-logo-img" />
-    <img src="/addi.avif"                  alt="Addi"         class="medio-logo-img medio-logo-addi" />
+    <img src="/binance.png" alt="Binance" class="medio-logo-img" />
+    <a href="https://mobile.cashea.app/merchants/b10cf71e-e5dd-4f04-86e7-eabc18c6ad53" target="_blank" rel="noopener">
+      <img src="/cashea.png" alt="Cashea" class="medio-logo-img" />
+    </a>
   </div>
 </div>
 
@@ -169,9 +170,9 @@
             }
             <div class="producto-footer">
               <div class="precios-wrap">
-                <span class="producto-precio">{{ producto.precio | currency:'COP':'symbol':'1.0-0' }}</span>
-                @if (producto.precioAnterior) {
-                  <span class="precio-anterior">{{ producto.precioAnterior | currency:'COP':'symbol':'1.0-0' }}</span>
+                <span class="producto-precio">{{ producto.precioDolar | currency:'USD':'symbol':'1.2-2' }}</span>
+                @if (producto.precioBolivares) {
+                  <span class="precio-bolivares">Bs. {{ producto.precioBolivares | number:'1.0-0' }}</span>
                 }
               </div>
               <button class="btn-agregar" (click)="agregarAlCarrito(producto, $event)" [disabled]="!producto.activo">

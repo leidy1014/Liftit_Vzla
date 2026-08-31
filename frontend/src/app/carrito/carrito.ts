@@ -33,7 +33,7 @@ export class Carrito {
   }
 
   calcularTotal(): number {
-    return this.items().reduce((total, i) => total + i.cantidad * i.precio, 0);
+    return this.items().reduce((total, i) => total + i.cantidad * i.precioDolar, 0);
   }
 
   maxStock(item: CarritoItem): number {
@@ -78,8 +78,8 @@ export class Carrito {
     window.open(url, '_blank');
   }
 
-  private formatCOP(valor: number): string {
-    return valor.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
+  private formatUSD(valor: number): string {
+    return valor.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
   }
 
   descargarCotizacion() {
@@ -104,7 +104,7 @@ export class Carrito {
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.text('Equipamiento Deportivo Profesional', 14, 23);
-    doc.text('liftitfitnesscol@gmail.com  ·  +57 321 332 4759', 14, 30);
+    doc.text('liftitcolombia@gmail.com  ·  +58 412 834 9722', 14, 30);
 
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
@@ -135,10 +135,10 @@ export class Carrito {
       body: items.map(i => [
         i.nombre,
         String(i.cantidad),
-        this.formatCOP(i.precio),
-        this.formatCOP(i.cantidad * i.precio),
+        this.formatUSD(i.precioDolar),
+        this.formatUSD(i.cantidad * i.precioDolar),
       ]),
-      foot: [['', '', 'TOTAL', this.formatCOP(total)]],
+      foot: [['', '', 'TOTAL', this.formatUSD(total)]],
       headStyles: { fillColor: [15, 15, 15], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 9 },
       footStyles: { fillColor: [240, 240, 240], textColor: [15, 15, 15], fontStyle: 'bold', fontSize: 10 },
       bodyStyles: { fontSize: 9 },
@@ -159,7 +159,7 @@ export class Carrito {
     doc.setFontSize(8);
     doc.setTextColor(130, 130, 130);
     doc.text('• Esta cotización tiene una validez de 15 días hábiles.', 14, finalY);
-    doc.text('• Los precios están expresados en pesos colombianos (COP) e incluyen IVA.', 14, finalY + 5);
+    doc.text('• Los precios están expresados en dólares americanos (USD).', 14, finalY + 5);
     doc.text('• Para confirmar tu pedido comunícate por WhatsApp al +57 321 332 4759.', 14, finalY + 10);
 
     doc.save(`cotizacion-liftit-${numero}.pdf`);

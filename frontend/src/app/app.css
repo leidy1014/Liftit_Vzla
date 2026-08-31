@@ -42,7 +42,7 @@
   .wa-float svg { width: 26px; height: 26px; }
 }
 
-/* ══ BADGE ADDI FLOTANTE ══ */
+/* ══ BADGE CASHEA FLOTANTE ══ */
 .addi-badge {
   position: fixed;
   right: 1.5rem;
@@ -54,8 +54,10 @@
   border: 1px solid #E8E8E8;
   z-index: 800;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  cursor: default;
+  cursor: pointer;
   line-height: 0;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .addi-badge:hover {

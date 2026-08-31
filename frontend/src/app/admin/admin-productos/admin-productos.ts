@@ -54,8 +54,8 @@ export class AdminProductos implements OnInit {
       nombre: ['', Validators.required],
       referencia: [''],
       descripcion: [''],
-      precio: [0, [Validators.required, Validators.min(0)]],
-      precioAnterior: [null],
+      precioDolar: [0, [Validators.required, Validators.min(0)]],
+      precioBolivares: [null],
       activo: [true],
       categoriaIds: [[]],
     });
@@ -83,7 +83,7 @@ export class AdminProductos implements OnInit {
       this.imagenPreview.set(null);
       this.imagenesNuevasFiles.set([]);
       this.imagenesNuevasPreview.set([]);
-      this.form.reset({ precio: 0, precioAnterior: null, activo: true, categoriaIds: [] });
+      this.form.reset({ precioDolar: 0, precioBolivares: null, activo: true, categoriaIds: [] });
     }
   }
 
@@ -93,8 +93,8 @@ export class AdminProductos implements OnInit {
       nombre: producto.nombre,
       referencia: producto.referencia ?? '',
       descripcion: producto.descripcion,
-      precio: producto.precio,
-      precioAnterior: producto.precioAnterior ?? null,
+      precioDolar: producto.precioDolar,
+      precioBolivares: producto.precioBolivares ?? null,
       activo: producto.activo,
       categoriaIds: producto.categorias?.map(c => c.id) ?? [],
     });
@@ -166,7 +166,7 @@ export class AdminProductos implements OnInit {
   }
 
   private resetFormulario() {
-    this.form.reset({ precio: 0, precioAnterior: null, activo: true, categoriaIds: [] });
+    this.form.reset({ precioDolar: 0, precioBolivares: null, activo: true, categoriaIds: [] });
     this.productoEditando.set(null);
     this.imagenFile.set(null);
     this.imagenPreview.set(null);

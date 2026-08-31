@@ -4,8 +4,8 @@ exports.CreateProductoDto = void 0;
 class CreateProductoDto {
     nombre;
     descripcion;
-    precio;
-    precioAnterior;
+    precioDolar;
+    precioBolivares;
     activo;
     costo;
     stock;

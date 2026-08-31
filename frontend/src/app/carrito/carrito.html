@@ -26,13 +26,13 @@
               <div class="exito-item-row">
                 <span class="exito-item-nombre">{{ item.nombre }}</span>
                 <span class="exito-item-qty">×{{ item.cantidad }}</span>
-                <span class="exito-item-precio">{{ item.cantidad * item.precio | currency:'COP':'symbol':'1.0-0' }}</span>
+                <span class="exito-item-precio">{{ item.cantidad * item.precioDolar | currency:'USD':'symbol':'1.2-2' }}</span>
               </div>
             }
           </div>
           <div class="exito-total-row">
             <span class="exito-total-label">Total del pedido</span>
-            <span class="exito-total-valor">{{ pedidoTotal() | currency:'COP':'symbol':'1.0-0' }}</span>
+            <span class="exito-total-valor">{{ pedidoTotal() | currency:'USD':'symbol':'1.2-2' }}</span>
           </div>
         }
 
@@ -107,7 +107,7 @@
 
             <div class="item-info">
               <h4 class="item-nombre">{{ item.nombre }}</h4>
-              <p class="item-precio-unit">{{ item.precio | currency:'COP':'symbol':'1.0-0' }} c/u</p>
+              <p class="item-precio-unit">{{ item.precioDolar | currency:'USD':'symbol':'1.2-2' }} c/u</p>
             </div>
 
             <div class="item-cantidad-ctrl">
@@ -128,7 +128,7 @@
 
             <div class="item-subtotal">
               <span class="subtotal-label">Subtotal</span>
-              <span class="subtotal-valor">{{ item.cantidad * item.precio | currency:'COP':'symbol':'1.0-0' }}</span>
+              <span class="subtotal-valor">{{ item.cantidad * item.precioDolar | currency:'USD':'symbol':'1.2-2' }}</span>
             </div>
 
             <button class="btn-eliminar" (click)="eliminar(item.productoId)" title="Eliminar">🗑</button>
@@ -145,14 +145,14 @@
             @for (item of items(); track item.productoId) {
               <div class="resumen-linea">
                 <span>{{ item.nombre }} x{{ item.cantidad }}</span>
-                <span>{{ item.cantidad * item.precio | currency:'COP':'symbol':'1.0-0' }}</span>
+                <span>{{ item.cantidad * item.precioDolar | currency:'USD':'symbol':'1.2-2' }}</span>
               </div>
             }
           </div>
 
           <div class="resumen-total">
             <span>Total</span>
-            <span class="total-valor">{{ calcularTotal() | currency:'COP':'symbol':'1.0-0' }}</span>
+            <span class="total-valor">{{ calcularTotal() | currency:'USD':'symbol':'1.2-2' }}</span>
           </div>
 
           <button class="btn-checkout" (click)="confirmarPedido()">

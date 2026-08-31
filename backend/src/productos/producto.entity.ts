@@ -19,10 +19,10 @@ export class Producto {
   visitas: number;
 
   @Column('decimal', { precision: 10, scale: 2 })
-  precio: number;
+  precioDolar: number;
 
   @Column('decimal', { precision: 10, scale: 2, nullable: true })
-  precioAnterior: number;
+  precioBolivares: number;
 
   @Column({ default: 0 })
   stock: number;

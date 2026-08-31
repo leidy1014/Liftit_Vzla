@@ -105,17 +105,17 @@
           <p class="form-section-label">Precios</p>
           <div class="form-row-2">
             <mat-form-field appearance="outline">
-              <mat-label>Precio con descuento *</mat-label>
+              <mat-label>Precio en dólares (USD) *</mat-label>
               <span matPrefix>$&nbsp;</span>
-              <input matInput type="number" formControlName="precio" />
-              <mat-hint>Precio actual que ve el cliente</mat-hint>
+              <input matInput type="number" formControlName="precioDolar" />
+              <mat-hint>Precio principal que ve el cliente</mat-hint>
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Precio sin descuento</mat-label>
-              <span matPrefix>$&nbsp;</span>
-              <input matInput type="number" formControlName="precioAnterior" />
-              <mat-hint>Se mostrará tachado en el catálogo</mat-hint>
+              <mat-label>Precio en bolívares (Bs.)</mat-label>
+              <span matPrefix>Bs.&nbsp;</span>
+              <input matInput type="number" formControlName="precioBolivares" />
+              <mat-hint>Se mostrará debajo del precio en USD</mat-hint>
             </mat-form-field>
           </div>
 
@@ -165,9 +165,9 @@
         }
         <p class="prod-card-nombre">{{ p.nombre }}</p>
         <div class="prod-card-precios">
-          <span class="prod-card-precio">${{ p.precio | number:'1.0-0' }}</span>
-          @if (p.precioAnterior) {
-            <span class="prod-card-precio-ant">${{ p.precioAnterior | number:'1.0-0' }}</span>
+          <span class="prod-card-precio">${{ p.precioDolar | number:'1.2-2' }} USD</span>
+          @if (p.precioBolivares) {
+            <span class="prod-card-precio-ant">Bs. {{ p.precioBolivares | number:'1.0-0' }}</span>
           }
         </div>
         @if ((p.categorias?.length ?? 0) > 0) {

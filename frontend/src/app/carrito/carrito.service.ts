@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { CarritoItem } from './carrito.interface';
 
 const STORAGE_KEY = 'liftit_carrito';
-const WHATSAPP_NUMBER = '573213324759';
+const WHATSAPP_NUMBER = '584128349722';
 
 @Injectable({ providedIn: 'root' })
 export class CarritoService {
@@ -27,7 +27,7 @@ export class CarritoService {
     return this._items().reduce((sum, i) => sum + i.cantidad, 0);
   }
 
-  agregar(producto: { id: number; nombre: string; precio: number; stock: number; imagen?: string | null }, cantidad = 1) {
+  agregar(producto: { id: number; nombre: string; precioDolar: number; stock: number; imagen?: string | null }, cantidad = 1) {
     const actuales = this._items();
     const idx = actuales.findIndex(i => i.productoId === producto.id);
     const maxStock = producto.stock > 0 ? producto.stock : 99;
@@ -41,7 +41,7 @@ export class CarritoService {
       this.guardar([...actuales, {
         productoId: producto.id,
         nombre: producto.nombre,
-        precio: producto.precio,
+        precioDolar: producto.precioDolar,
         stock: producto.stock,
         imagen: producto.imagen ?? null,
         cantidad,
@@ -64,10 +64,10 @@ export class CarritoService {
   generarUrlWhatsapp(): string {
     const items = this._items();
     const lineas = items.map(i =>
-      `- *${i.nombre}* x${i.cantidad} → $${(i.precio * i.cantidad).toLocaleString('es-CO')}`
+      `- *${i.nombre}* x${i.cantidad} → $${(i.precioDolar * i.cantidad).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`
     ).join('\n');
-    const total = items.reduce((sum, i) => sum + i.precio * i.cantidad, 0);
-    const mensaje = `Hola! Deseo realizar este pedido:\n\n${lineas}\n\n*Total: $${total.toLocaleString('es-CO')}*\n\n¿Está disponible?`;
+    const total = items.reduce((sum, i) => sum + i.precioDolar * i.cantidad, 0);
+    const mensaje = `Hola! Deseo realizar este pedido:\n\n${lineas}\n\n*Total: $${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD*\n\n¿Está disponible?`;
     return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`;
   }
 }

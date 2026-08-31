@@ -1,7 +1,7 @@
 export interface CarritoItem {
   productoId: number;
   nombre: string;
-  precio: number;
+  precioDolar: number;
   stock: number;
   imagen: string | null;
   cantidad: number;

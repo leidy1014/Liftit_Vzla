@@ -84,8 +84,11 @@
             <p class="detalle-ref">Ref: {{ producto()!.referencia }}</p>
           }
 
-          <div class="detalle-precio">
-            {{ producto()!.precio | currency:'COP':'symbol':'1.0-0' }}
+          <div class="detalle-precios">
+            <span class="detalle-precio">{{ producto()!.precioDolar | currency:'USD':'symbol':'1.2-2' }}</span>
+            @if (producto()!.precioBolivares) {
+              <span class="detalle-precio-bs">Bs. {{ producto()!.precioBolivares | number:'1.0-0' }}</span>
+            }
           </div>
 
           @if (producto()!.descripcion) {
@@ -167,7 +170,7 @@
                     <span class="rel-cat">{{ r.categorias![0].nombre }}</span>
                   }
                   <p class="rel-nombre">{{ r.nombre }}</p>
-                  <p class="rel-precio">{{ r.precio | currency:'COP':'symbol':'1.0-0' }}</p>
+                  <p class="rel-precio">{{ r.precioDolar | currency:'USD':'symbol':'1.2-2' }}</p>
                 </div>
               </div>
             }
@@ -284,12 +287,12 @@
         <!-- Precios -->
         <div class="modal-row-2">
           <div class="modal-field">
-            <label class="modal-label">Precio *</label>
-            <input class="modal-input" formControlName="precio" type="number" min="0" />
+            <label class="modal-label">Precio en dólares (USD) *</label>
+            <input class="modal-input" formControlName="precioDolar" type="number" min="0" />
           </div>
           <div class="modal-field">
-            <label class="modal-label">Precio sin descuento</label>
-            <input class="modal-input" formControlName="precioAnterior" type="number" min="0" placeholder="Opcional" />
+            <label class="modal-label">Precio en bolívares (Bs.)</label>
+            <input class="modal-input" formControlName="precioBolivares" type="number" min="0" placeholder="Opcional" />
           </div>
         </div>
 

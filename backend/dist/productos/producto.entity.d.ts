@@ -5,8 +5,8 @@ export declare class Producto {
     descripcion: string;
     orden: number;
     visitas: number;
-    precio: number;
-    precioAnterior: number;
+    precioDolar: number;
+    precioBolivares: number;
     stock: number;
     stockAverias: number;
     activo: boolean;
