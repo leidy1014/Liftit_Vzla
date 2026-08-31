@@ -90,11 +90,11 @@ let CarritoService = class CarritoService {
         }
         const usuario = await this.usuarioRepository.findOne({ where: { id: usuarioId } });
         const clienteNombre = usuario?.nombre ?? `Cliente #${usuarioId}`;
-        const total = items.reduce((sum, item) => sum + Number(item.producto.precio) * item.cantidad, 0);
-        const lineas = items.map(item => `- ${item.producto.nombre} x${item.cantidad} ($${Number(item.producto.precio).toLocaleString('es-CO')})`);
+        const total = items.reduce((sum, item) => sum + Number(item.producto.precioDolar) * item.cantidad, 0);
+        const lineas = items.map(item => `- ${item.producto.nombre} x${item.cantidad} ($${Number(item.producto.precioDolar).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD)`);
         const mensaje = `Hola! Soy ${clienteNombre} y quiero hacer el siguiente pedido:\n\n` +
             lineas.join('\n') +
-            `\n\nTotal: $${total.toLocaleString('es-CO')}`;
+            `\n\nTotal: $${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`;
         const numero = this.configService.get('WHATSAPP_NUMBER');
         const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
         await this.carritoRepository.delete({ usuario: { id: usuarioId } });

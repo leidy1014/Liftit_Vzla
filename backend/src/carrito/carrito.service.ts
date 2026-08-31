@@ -97,18 +97,18 @@ export class CarritoService {
         const clienteNombre = usuario?.nombre ?? `Cliente #${usuarioId}`;
 
         const total = items.reduce(
-            (sum, item) => sum + Number(item.producto.precio) * item.cantidad,
+            (sum, item) => sum + Number(item.producto.precioDolar) * item.cantidad,
             0,
         );
 
         const lineas = items.map(
-            item => `- ${item.producto.nombre} x${item.cantidad} ($${Number(item.producto.precio).toLocaleString('es-CO')})`
+            item => `- ${item.producto.nombre} x${item.cantidad} ($${Number(item.producto.precioDolar).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD)`
         );
 
         const mensaje =
             `Hola! Soy ${clienteNombre} y quiero hacer el siguiente pedido:\n\n` +
             lineas.join('\n') +
-            `\n\nTotal: $${total.toLocaleString('es-CO')}`;
+            `\n\nTotal: $${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`;
 
         const numero = this.configService.get<string>('WHATSAPP_NUMBER');
         const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;

@@ -27,20 +27,25 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                envFilePath: [`.env.${process.env.NODE_ENV}`, '.env'],
+                envFilePath: ['.env.development', '.env'],
             }),
             typeorm_1.TypeOrmModule.forRootAsync({
                 imports: [config_1.ConfigModule],
-                useFactory: (config) => ({
-                    type: 'postgres',
-                    host: config.get('DB_HOST'),
-                    port: config.get('DB_PORT'),
-                    username: config.get('DB_USER'),
-                    password: config.get('DB_PASSWORD'),
-                    database: config.get('DB_NAME'),
-                    autoLoadEntities: true,
-                    synchronize: true,
-                }),
+                useFactory: (config) => {
+                    const host = config.get('DB_HOST') ?? 'localhost';
+                    const isLocal = host === 'localhost' || host === '127.0.0.1';
+                    return {
+                        type: 'postgres',
+                        host,
+                        port: config.get('DB_PORT'),
+                        username: config.get('DB_USER'),
+                        password: config.get('DB_PASSWORD'),
+                        database: config.get('DB_NAME'),
+                        ssl: isLocal ? false : { rejectUnauthorized: false },
+                        autoLoadEntities: true,
+                        synchronize: true,
+                    };
+                },
                 inject: [config_1.ConfigService],
             }),
             productos_module_1.ProductosModule,
