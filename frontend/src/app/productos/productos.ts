@@ -28,6 +28,10 @@ export class ProductosService {
     return this.http.get<Producto>(`${this.apiUrl}/${id}`);
   }
 
+  getBySlug(slug: string): Observable<Producto> {
+    return this.http.get<Producto>(`${this.apiUrl}/slug/${slug}`);
+  }
+
   create(data: Partial<Producto>): Observable<Producto> {
     return this.http.post<Producto>(this.apiUrl, data).pipe(
       tap(() => this.invalidarCache())

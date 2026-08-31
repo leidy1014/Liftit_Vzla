@@ -4,6 +4,7 @@ export declare class ProductosController {
     private readonly productosService;
     constructor(productosService: ProductosService);
     findAll(): Promise<import("./producto.entity").Producto[]>;
+    findBySlug(slug: string): Promise<import("./producto.entity").Producto>;
     findOne(id: number): Promise<import("./producto.entity").Producto>;
     uploadImagen(file: Express.Multer.File): Promise<{
         filename: string;

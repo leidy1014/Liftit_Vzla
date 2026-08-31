@@ -18,6 +18,7 @@ import { Categorias } from '../../categorias/categorias';
 export class AdminCategorias {
   categorias = signal<Categoria[]>([]);
   mostrarFormulario = signal(false);
+  editando = signal<Categoria | null>(null);
   columnas = ['nombre', 'descripcion', 'activo', 'acciones'];
 
   form: FormGroup;
@@ -28,7 +29,8 @@ export class AdminCategorias {
   ) {
     this.form = this.fb.group({
       nombre: ['', Validators.required],
-      descripcion: ['']
+      descripcion: [''],
+      activo: [true],
     });
   }
 
@@ -36,22 +38,42 @@ export class AdminCategorias {
     this.cargarCategorias();
   }
 
-
   cargarCategorias() {
     this.categoriasService.getAll().subscribe(data => this.categorias.set(data));
   }
 
   toggleFormulario() {
+    this.editando.set(null);
+    this.form.reset({ nombre: '', descripcion: '', activo: true });
     this.mostrarFormulario.set(!this.mostrarFormulario());
+  }
+
+  editar(cat: Categoria) {
+    this.editando.set(cat);
+    this.form.patchValue({ nombre: cat.nombre, descripcion: cat.descripcion, activo: cat.activo });
+    this.mostrarFormulario.set(true);
   }
 
   guardar() {
     if (this.form.invalid) return;
-    this.categoriasService.create(this.form.value).subscribe(() => {
-      this.cargarCategorias();
-      this.form.reset();
-      this.mostrarFormulario.set(false);
-    });
+    const cat = this.editando();
+    if (cat) {
+      this.categoriasService.update(cat.id, this.form.value).subscribe(() => {
+        this.cargarCategorias();
+        this.cancelar();
+      });
+    } else {
+      this.categoriasService.create(this.form.value).subscribe(() => {
+        this.cargarCategorias();
+        this.cancelar();
+      });
+    }
+  }
+
+  cancelar() {
+    this.editando.set(null);
+    this.form.reset({ nombre: '', descripcion: '', activo: true });
+    this.mostrarFormulario.set(false);
   }
 
   eliminar(id: number) {

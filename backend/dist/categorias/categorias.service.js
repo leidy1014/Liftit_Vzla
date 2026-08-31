@@ -32,6 +32,13 @@ let CategoriasService = class CategoriasService {
         const categoria = this.categoriaRepository.create(dto);
         return this.categoriaRepository.save(categoria);
     }
+    async update(id, dto) {
+        const categoria = await this.findOne(id);
+        if (!categoria)
+            throw new common_1.NotFoundException(`Categoría #${id} no encontrada`);
+        Object.assign(categoria, dto);
+        return this.categoriaRepository.save(categoria);
+    }
     async remove(id) {
         await this.findOne(id);
         await this.categoriaRepository.delete(id);

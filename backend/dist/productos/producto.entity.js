@@ -17,6 +17,7 @@ let Producto = class Producto {
     nombre;
     descripcion;
     orden;
+    visitas;
     precio;
     precioAnterior;
     stock;
@@ -27,6 +28,7 @@ let Producto = class Producto {
     marca;
     codigoBarras;
     stockMinimo;
+    slug;
     imagen;
     imagenes;
     categorias;
@@ -48,6 +50,10 @@ __decorate([
     (0, typeorm_1.Column)({ default: 0 }),
     __metadata("design:type", Number)
 ], Producto.prototype, "orden", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], Producto.prototype, "visitas", void 0);
 __decorate([
     (0, typeorm_1.Column)('decimal', { precision: 10, scale: 2 }),
     __metadata("design:type", Number)
@@ -88,6 +94,10 @@ __decorate([
     (0, typeorm_1.Column)({ default: 5 }),
     __metadata("design:type", Number)
 ], Producto.prototype, "stockMinimo", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], Producto.prototype, "slug", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)

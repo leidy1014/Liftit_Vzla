@@ -7,6 +7,8 @@ import { AuthService } from '../auth/auth';
 import { environment } from '../../environments/environment';
 import { Navbar } from '../shared/navbar/navbar';
 import { ToastService } from '../shared/toast/toast.service';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-carrito',
@@ -74,5 +76,92 @@ export class Carrito {
     this.carritoService.limpiar();
     this.pedidoEnviado.set(true);
     window.open(url, '_blank');
+  }
+
+  private formatCOP(valor: number): string {
+    return valor.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
+  }
+
+  descargarCotizacion() {
+    const items = this.items();
+    if (!items.length) return;
+
+    const doc = new jsPDF();
+    const total = this.calcularTotal();
+    const fecha = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+    const numero = `COT-${Date.now().toString().slice(-6)}`;
+    const nombreUsuario = this.authService.getNombreUsuario();
+
+    // ── Encabezado ──────────────────────────────────────────────
+    doc.setFillColor(15, 15, 15);
+    doc.rect(0, 0, 210, 38, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text('LIFTIT FITNESS', 14, 16);
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Equipamiento Deportivo Profesional', 14, 23);
+    doc.text('liftitfitnesscol@gmail.com  ·  +57 321 332 4759', 14, 30);
+
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('COTIZACIÓN', 196, 16, { align: 'right' });
+
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`N° ${numero}`, 196, 23, { align: 'right' });
+    doc.text(`Fecha: ${fecha}`, 196, 30, { align: 'right' });
+
+    // ── Datos del cliente ────────────────────────────────────────
+    doc.setTextColor(30, 30, 30);
+    let cursorY = 50;
+
+    if (nombreUsuario) {
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text('COTIZACIÓN PARA:', 14, cursorY);
+      doc.setFont('helvetica', 'normal');
+      doc.text(nombreUsuario, 14, cursorY + 6);
+      cursorY += 18;
+    }
+
+    // ── Tabla de productos ───────────────────────────────────────
+    autoTable(doc, {
+      startY: cursorY,
+      head: [['Producto', 'Cant.', 'Precio unitario', 'Subtotal']],
+      body: items.map(i => [
+        i.nombre,
+        String(i.cantidad),
+        this.formatCOP(i.precio),
+        this.formatCOP(i.cantidad * i.precio),
+      ]),
+      foot: [['', '', 'TOTAL', this.formatCOP(total)]],
+      headStyles: { fillColor: [15, 15, 15], textColor: [255, 255, 255], fontStyle: 'bold', fontSize: 9 },
+      footStyles: { fillColor: [240, 240, 240], textColor: [15, 15, 15], fontStyle: 'bold', fontSize: 10 },
+      bodyStyles: { fontSize: 9 },
+      columnStyles: {
+        0: { cellWidth: 90 },
+        1: { halign: 'center', cellWidth: 18 },
+        2: { halign: 'right', cellWidth: 42 },
+        3: { halign: 'right', cellWidth: 42 },
+      },
+      alternateRowStyles: { fillColor: [248, 248, 248] },
+    });
+
+    // ── Nota al pie ──────────────────────────────────────────────
+    const finalY: number = (doc as any).lastAutoTable.finalY + 12;
+    doc.setDrawColor(220, 220, 220);
+    doc.line(14, finalY - 4, 196, finalY - 4);
+
+    doc.setFontSize(8);
+    doc.setTextColor(130, 130, 130);
+    doc.text('• Esta cotización tiene una validez de 15 días hábiles.', 14, finalY);
+    doc.text('• Los precios están expresados en pesos colombianos (COP) e incluyen IVA.', 14, finalY + 5);
+    doc.text('• Para confirmar tu pedido comunícate por WhatsApp al +57 321 332 4759.', 14, finalY + 10);
+
+    doc.save(`cotizacion-liftit-${numero}.pdf`);
   }
 }

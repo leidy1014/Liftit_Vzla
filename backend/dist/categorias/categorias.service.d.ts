@@ -7,5 +7,6 @@ export declare class CategoriasService {
     findAll(): Promise<Categoria[]>;
     findOne(id: number): Promise<Categoria | null>;
     create(dto: CreateCategoriaDto): Promise<Categoria>;
+    update(id: number, dto: Partial<CreateCategoriaDto>): Promise<Categoria>;
     remove(id: number): Promise<void>;
 }

@@ -2,6 +2,7 @@ import { Categoria } from '../categorias/categoria.interface';
 
 export interface Producto {
   id: number;
+  slug?: string;
   orden?: number;
   nombre: string;
   calificacionPromedio?: number;

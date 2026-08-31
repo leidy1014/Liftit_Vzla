@@ -44,9 +44,18 @@ export class ProductosController {
     return this.productosService.findAll();
   }
 
+  @Get('slug/:slug')
+  async findBySlug(@Param('slug') slug: string) {
+    const producto = await this.productosService.findBySlug(slug);
+    this.productosService.registrarVisita(producto.id);
+    return producto;
+  }
+
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.productosService.findOne(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const producto = await this.productosService.findOne(id);
+    this.productosService.registrarVisita(id);
+    return producto;
   }
 
   @UseGuards(JwtGuard, RolesGuard)

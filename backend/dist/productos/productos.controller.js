@@ -54,8 +54,15 @@ let ProductosController = class ProductosController {
     findAll() {
         return this.productosService.findAll();
     }
-    findOne(id) {
-        return this.productosService.findOne(id);
+    async findBySlug(slug) {
+        const producto = await this.productosService.findBySlug(slug);
+        this.productosService.registrarVisita(producto.id);
+        return producto;
+    }
+    async findOne(id) {
+        const producto = await this.productosService.findOne(id);
+        this.productosService.registrarVisita(id);
+        return producto;
     }
     async uploadImagen(file) {
         const filename = await subirAStorage(file);
@@ -89,11 +96,18 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ProductosController.prototype, "findAll", null);
 __decorate([
+    (0, common_1.Get)('slug/:slug'),
+    __param(0, (0, common_1.Param)('slug')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], ProductosController.prototype, "findBySlug", null);
+__decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], ProductosController.prototype, "findOne", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, roles_guard_1.RolesGuard),

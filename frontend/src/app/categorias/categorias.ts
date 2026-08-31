@@ -20,6 +20,10 @@ export class Categorias {
     return this.http.post<Categoria>(this.apiUrl, data);
   }
   
+  update(id: number, data: Partial<Categoria>): Observable<Categoria> {
+    return this.http.patch<Categoria>(`${this.apiUrl}/${id}`, data);
+  }
+
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }

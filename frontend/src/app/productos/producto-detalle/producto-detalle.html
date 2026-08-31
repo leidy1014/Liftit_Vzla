@@ -142,7 +142,10 @@
 
       <!-- Botón volver -->
       <div class="volver-row">
-        <a routerLink="/productos" class="btn-volver-catalogo">← Volver al catálogo</a>
+        <button class="btn-volver-catalogo" (click)="volver()">
+          <span class="volver-flecha">←</span>
+          Volver
+        </button>
       </div>
 
       <!-- ══ PRODUCTOS RELACIONADOS ══ -->
@@ -151,7 +154,7 @@
           <h2 class="relacionados-titulo">También te puede interesar</h2>
           <div class="relacionados-grid">
             @for (r of relacionados(); track r.id) {
-              <div class="rel-card" (click)="router.navigate(['/productos', r.id])">
+              <div class="rel-card" (click)="router.navigate(['/productos', r.slug ?? r.id])">
                 <div class="rel-imagen">
                   @if (r.imagen) {
                     <img [src]="getImagenUrl(r.imagen)" [alt]="r.nombre" class="rel-img" />

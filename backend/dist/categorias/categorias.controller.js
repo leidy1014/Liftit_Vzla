@@ -33,6 +33,9 @@ let CategoriasController = class CategoriasController {
     create(dto) {
         return this.categoriasService.create(dto);
     }
+    update(id, dto) {
+        return this.categoriasService.update(id, dto);
+    }
     remove(id) {
         return this.categoriasService.remove(id);
     }
@@ -60,6 +63,16 @@ __decorate([
     __metadata("design:paramtypes", [create_categoria_dto_1.CreateCategoriaDto]),
     __metadata("design:returntype", Promise)
 ], CategoriasController.prototype, "create", null);
+__decorate([
+    (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, roles_guard_1.RolesGuard),
+    (0, roles_decorator_1.Roles)('admin'),
+    (0, common_1.Patch)(':id'),
+    __param(0, (0, common_1.Param)('id', common_1.ParseIntPipe)),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:returntype", void 0)
+], CategoriasController.prototype, "update", null);
 __decorate([
     (0, common_1.UseGuards)(jwt_guard_1.JwtGuard, roles_guard_1.RolesGuard),
     (0, roles_decorator_1.Roles)('admin'),

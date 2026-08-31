@@ -1,6 +1,5 @@
 import { Component, OnInit, signal } from '@angular/core';
-import { CurrencyPipe, DatePipe } from '@angular/common';
-import { forkJoin } from 'rxjs';
+import { CurrencyPipe, DatePipe, Location } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { Title, Meta } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -71,6 +70,7 @@ export class ProductoDetalle implements OnInit {
         private metaService: Meta,
         private fb: FormBuilder,
         private categoriasService: Categorias,
+        private location: Location,
     ) {
         this.editForm = this.fb.group({
             nombre: ['', Validators.required],
@@ -82,9 +82,14 @@ export class ProductoDetalle implements OnInit {
         });
     }
 
+    volver() {
+        this.location.back();
+    }
+
     ngOnInit() {
         this.route.paramMap.subscribe(params => {
-            const id = Number(params.get('id'));
+            const slug = params.get('slug')!;
+            window.scrollTo({ top: 0, behavior: 'instant' });
             this.cargando.set(true);
             this.producto.set(null);
             this.relacionados.set([]);
@@ -93,23 +98,22 @@ export class ProductoDetalle implements OnInit {
             this.descripcionExpandida.set(false);
             this.yaReseno.set(false);
 
-            forkJoin([
-                this.productosService.getById(id),
-                this.resenasService.getByProducto(id),
-                this.productosService.getAll(),
-            ]).subscribe({
-                next: ([p, resenas, todos]) => {
+            this.productosService.getBySlug(slug).subscribe({
+                next: (p) => {
                     this.producto.set(p);
                     this.imagenActiva.set(p.imagen ?? null);
-                    this.resenas.set(resenas);
                     this.cargando.set(false);
 
-                    const rel = todos
-                        .filter(x => x.id !== id && x.activo &&
-                            x.categorias?.some(xc => p.categorias?.some(pc => pc.id === xc.id))
-                        )
-                        .slice(0, 4);
-                    this.relacionados.set(rel);
+                    this.resenasService.getByProducto(p.id).subscribe(resenas => this.resenas.set(resenas));
+
+                    this.productosService.getAll().subscribe(todos => {
+                        const rel = todos
+                            .filter(x => x.id !== p.id && x.activo &&
+                                x.categorias?.some(xc => p.categorias?.some(pc => pc.id === xc.id))
+                            )
+                            .slice(0, 4);
+                        this.relacionados.set(rel);
+                    });
 
                     const desc = p.descripcion
                         ? p.descripcion.slice(0, 155).trimEnd() + '...'
@@ -117,13 +121,14 @@ export class ProductoDetalle implements OnInit {
                     const imagen = p.imagen
                         ? `${environment.uploadsUrl}/${p.imagen}`
                         : 'https://liftitfitnesscol.com/hero-banner.jpg.png';
+                    const urlSlug = p.slug ?? p.id;
 
                     this.titleService.setTitle(`${p.nombre} | Liftit Fitness`);
                     this.metaService.updateTag({ name: 'description', content: desc });
                     this.metaService.updateTag({ property: 'og:title', content: `${p.nombre} | Liftit Fitness` });
                     this.metaService.updateTag({ property: 'og:description', content: desc });
                     this.metaService.updateTag({ property: 'og:image', content: imagen });
-                    this.metaService.updateTag({ property: 'og:url', content: `https://liftitfitnesscol.com/productos/${p.id}` });
+                    this.metaService.updateTag({ property: 'og:url', content: `https://liftitfitnesscol.com/productos/${urlSlug}` });
                 },
                 error: () => { this.cargando.set(false); this.router.navigate(['/productos']); },
             });
@@ -200,7 +205,7 @@ export class ProductoDetalle implements OnInit {
     compartirPorWhatsapp() {
         const p = this.producto();
         if (!p) return;
-        const url = `https://liftitfitnesscol.com/productos/${p.id}`;
+        const url = `https://liftitfitnesscol.com/productos/${p.slug ?? p.id}`;
         const precio = p.precio.toLocaleString('es-CO');
         const descuento = p.precioAnterior
             ? `\n🏷️ Antes: $${p.precioAnterior.toLocaleString('es-CO')} COP`

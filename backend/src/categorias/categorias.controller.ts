@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Param, ParseIntPipe, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, UseGuards, Param, ParseIntPipe, Delete } from '@nestjs/common';
 import { CategoriasService } from './categorias.service';
 import { CreateCategoriaDto } from './dto/create-categoria.dto';
 import { JwtGuard } from '../auth/jwt.guard';
@@ -24,6 +24,13 @@ export class CategoriasController {
     @Post()
     create(@Body() dto: CreateCategoriaDto): Promise<import("./categoria.entity").Categoria> {
         return this.categoriasService.create(dto);
+    }
+
+    @UseGuards(JwtGuard, RolesGuard)
+    @Roles('admin')
+    @Patch(':id')
+    update(@Param('id', ParseIntPipe) id: number, @Body() dto: Partial<CreateCategoriaDto>) {
+        return this.categoriasService.update(id, dto);
     }
 
     @UseGuards(JwtGuard, RolesGuard)

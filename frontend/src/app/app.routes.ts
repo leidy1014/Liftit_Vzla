@@ -17,7 +17,7 @@ import { NotFound } from './not-found/not-found';
 
 export const routes: Routes = [
   { path: 'productos', component: ProductosLista },
-  { path: 'productos/:id', component: ProductoDetalle },
+  { path: 'productos/:slug', component: ProductoDetalle },
   { path: 'login', component: Login },
   { path: 'register', component: Register },
   { path: 'carrito', component: Carrito },

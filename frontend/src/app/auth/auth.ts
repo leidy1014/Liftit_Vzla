@@ -33,6 +33,17 @@ export class AuthService {
     return payload.rol;
   }
 
+  getNombreUsuario(): string | null {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.nombre ?? payload.email ?? null;
+    } catch {
+      return null;
+    }
+  }
+
   logout() {
     localStorage.removeItem('token');
     this.estaLogueado.set(false);

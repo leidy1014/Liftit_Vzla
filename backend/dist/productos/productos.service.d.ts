@@ -6,7 +6,10 @@ export declare class ProductosService {
     private readonly productoRepository;
     private readonly categoriaRepository;
     constructor(productoRepository: Repository<Producto>, categoriaRepository: Repository<Categoria>);
+    private generarSlug;
     findAll(): Promise<Producto[]>;
+    findBySlug(slug: string): Promise<Producto>;
+    registrarVisita(id: number): void;
     reordenar(ids: number[]): Promise<void>;
     findOne(id: number): Promise<Producto>;
     create(dto: CreateProductoDto): Promise<Producto>;

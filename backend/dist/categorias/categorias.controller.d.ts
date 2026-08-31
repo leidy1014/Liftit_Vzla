@@ -6,5 +6,6 @@ export declare class CategoriasController {
     findAll(): Promise<import("./categoria.entity").Categoria[]>;
     findOne(id: number): Promise<import("./categoria.entity").Categoria | null>;
     create(dto: CreateCategoriaDto): Promise<import("./categoria.entity").Categoria>;
+    update(id: number, dto: Partial<CreateCategoriaDto>): Promise<import("./categoria.entity").Categoria>;
     remove(id: number): Promise<void>;
 }

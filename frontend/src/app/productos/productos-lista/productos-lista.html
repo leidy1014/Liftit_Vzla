@@ -25,14 +25,14 @@
 @if (categorias().length > 0) {
   <div class="cats-movil">
     @if (categoriaActiva() !== null) {
-      <button class="cats-movil-volver" (click)="categoriaActiva.set(null)">
+      <button class="cats-movil-volver" (click)="seleccionarCategoria(null)">
         ← Todas las categorías
       </button>
     } @else {
       <p class="cats-movil-titulo">Explorar por categoría</p>
       <div class="cats-movil-grid">
         @for (cat of categorias(); track cat.id) {
-          <button class="cat-movil-card" (click)="categoriaActiva.set(cat.nombre)">
+          <button class="cat-movil-card" (click)="seleccionarCategoria(cat.nombre)">
             <div class="cat-movil-img-wrap">
               @if (cat.imagen) {
                 <img [src]="imagenUrl(cat.imagen)" [alt]="cat.nombre" class="cat-movil-img" />
@@ -60,7 +60,7 @@
       <p class="sidebar-titulo">Categorías</p>
       <ul class="sidebar-lista">
         <li>
-          <button class="sidebar-item" [class.activa]="categoriaActiva() === null" (click)="categoriaActiva.set(null)">
+          <button class="sidebar-item" [class.activa]="categoriaActiva() === null" (click)="seleccionarCategoria(null)">
             Todos los productos
           </button>
         </li>
@@ -69,7 +69,7 @@
             <button
               class="sidebar-item"
               [class.activa]="categoriaActiva() === cat.nombre"
-              (click)="categoriaActiva.set(cat.nombre)">
+              (click)="seleccionarCategoria(cat.nombre)">
               {{ cat.nombre }}
             </button>
           </li>
@@ -141,7 +141,7 @@
     <!-- Grid de productos -->
     <div class="productos-grid">
       @for (producto of productosPaginados(); track producto.id) {
-        <div class="producto-card" (click)="irADetalle(producto.id)">
+        <div class="producto-card" (click)="irADetalle(producto)">
 
           <div class="producto-imagen">
             @if (producto.imagen) {
@@ -188,7 +188,7 @@
       <div class="empty-state">
         <span class="empty-icon">🔍</span>
         <p>No hay productos que coincidan.</p>
-        <button class="btn-reset" (click)="busqueda.set(''); categoriaActiva.set(null); precioMin.set(null); precioMax.set(null); ordenamiento.set('')">Ver todos</button>
+        <button class="btn-reset" (click)="busqueda.set(''); seleccionarCategoria(null); precioMin.set(null); precioMax.set(null); ordenamiento.set('')">Ver todos</button>
       </div>
     }
 

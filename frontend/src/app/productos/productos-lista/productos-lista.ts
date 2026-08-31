@@ -6,7 +6,7 @@ import { forkJoin } from 'rxjs';
 import { ProductosService } from '../productos';
 import { Producto } from '../producto.interface';
 import { CarritoService } from '../../carrito/carrito.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Navbar } from '../../shared/navbar/navbar';
 import { Footer } from '../../shared/footer/footer';
 import { ToastService } from '../../shared/toast/toast.service';
@@ -86,6 +86,7 @@ export class ProductosLista implements OnInit {
     private carritoService: CarritoService,
     private resenasService: ResenasService,
     private router: Router,
+    private route: ActivatedRoute,
     private toast: ToastService,
     private titleService: Title,
     private metaService: Meta,
@@ -100,7 +101,18 @@ export class ProductosLista implements OnInit {
     });
   }
 
+  seleccionarCategoria(nombre: string | null) {
+    this.categoriaActiva.set(nombre);
+    this.router.navigate(['/productos'], {
+      queryParams: nombre ? { categoria: nombre } : {},
+    });
+  }
+
   ngOnInit() {
+    this.route.queryParamMap.subscribe(params => {
+      this.categoriaActiva.set(params.get('categoria'));
+    });
+
     this.titleService.setTitle('Catálogo | Liftit Fitness — Equipamiento Deportivo Colombia');
     this.metaService.updateTag({ name: 'description', content: 'Explora nuestro catálogo de equipamiento deportivo profesional: pesas rusas, barras, accesorios de gimnasio y más. Envíos a todo Colombia.' });
     this.metaService.updateTag({ property: 'og:title', content: 'Catálogo | Liftit Fitness — Equipamiento Deportivo' });
@@ -133,8 +145,8 @@ export class ProductosLista implements OnInit {
     return `${environment.uploadsUrl}/${imagen}`;
   }
 
-  irADetalle(id: number) {
-    this.router.navigate(['/productos', id]);
+  irADetalle(producto: Producto) {
+    this.router.navigate(['/productos', producto.slug ?? producto.id]);
   }
 
   estrellas(promedio: number): string[] {

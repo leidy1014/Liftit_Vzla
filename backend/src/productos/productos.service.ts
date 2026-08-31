@@ -14,11 +14,41 @@ export class ProductosService {
     private readonly categoriaRepository: Repository<Categoria>,
   ) {}
 
+  private generarSlug(nombre: string): string {
+    // eslint-disable-next-line no-control-regex
+    return nombre
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+  }
+
   findAll(): Promise<Producto[]> {
     return this.productoRepository.find({
       relations: { categorias: true },
-      order: { orden: 'ASC', id: 'ASC' },
+      order: { visitas: 'DESC', id: 'ASC' },
     });
+  }
+
+  async findBySlug(slug: string): Promise<Producto> {
+    // Soporte para URLs antiguas con ID numérico
+    const numId = parseInt(slug, 10);
+    if (!isNaN(numId) && String(numId) === slug) {
+      return this.findOne(numId);
+    }
+    const producto = await this.productoRepository.findOne({
+      where: { slug },
+      relations: { categorias: true },
+    });
+    if (!producto) throw new NotFoundException(`Producto no encontrado`);
+    return producto;
+  }
+
+  registrarVisita(id: number): void {
+    this.productoRepository.increment({ id }, 'visitas', 1);
   }
 
   async reordenar(ids: number[]): Promise<void> {
@@ -39,6 +69,7 @@ export class ProductosService {
   async create(dto: CreateProductoDto): Promise<Producto> {
     const { categoriaIds, ...resto } = dto;
     const producto = this.productoRepository.create(resto);
+    producto.slug = this.generarSlug(dto.nombre);
     producto.categorias = categoriaIds?.length
       ? await this.categoriaRepository.findBy({ id: In(categoriaIds) })
       : [];
@@ -49,6 +80,7 @@ export class ProductosService {
     const { categoriaIds, ...resto } = dto;
     const producto = await this.findOne(id);
     Object.assign(producto, resto);
+    if (dto.nombre) producto.slug = this.generarSlug(dto.nombre);
     if (categoriaIds !== undefined) {
       producto.categorias = categoriaIds.length
         ? await this.categoriaRepository.findBy({ id: In(categoriaIds) })

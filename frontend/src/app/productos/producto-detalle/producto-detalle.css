@@ -622,14 +622,29 @@
 }
 
 .btn-volver-catalogo {
-  font-size: 0.88rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.2rem;
+  background: #fff;
+  border: 1.5px solid var(--cg-magenta);
+  border-radius: 8px;
   color: var(--cg-magenta);
-  text-decoration: none;
-  font-weight: 500;
-  transition: opacity 0.15s;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
 }
 
-.btn-volver-catalogo:hover { opacity: 0.7; }
+.btn-volver-catalogo:hover {
+  background: var(--cg-magenta);
+  color: #fff;
+}
+
+.volver-flecha {
+  font-size: 1.1rem;
+  line-height: 1;
+}
 
 /* ── Cargando ── */
 .detalle-cargando {

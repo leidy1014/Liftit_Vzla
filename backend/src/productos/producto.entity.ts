@@ -15,6 +15,9 @@ export class Producto {
   @Column({ default: 0 })
   orden: number;
 
+  @Column({ default: 0 })
+  visitas: number;
+
   @Column('decimal', { precision: 10, scale: 2 })
   precio: number;
 
@@ -44,6 +47,9 @@ export class Producto {
 
   @Column({ default: 5 })
   stockMinimo: number;
+
+  @Column({ nullable: true })
+  slug: string;
 
   @Column({ nullable: true })
   imagen: string;

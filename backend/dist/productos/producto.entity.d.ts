@@ -4,6 +4,7 @@ export declare class Producto {
     nombre: string;
     descripcion: string;
     orden: number;
+    visitas: number;
     precio: number;
     precioAnterior: number;
     stock: number;
@@ -14,6 +15,7 @@ export declare class Producto {
     marca: string;
     codigoBarras: string;
     stockMinimo: number;
+    slug: string;
     imagen: string;
     imagenes: string[];
     categorias: Categoria[];
